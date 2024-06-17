@@ -406,8 +406,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f69e2abaf71cfa44b205d7b625014cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridRadius: 2
+  gridRadius: 3
   hexSize: 1
+  hexThickness: 0.1
+  mapConfiguration: {fileID: 11400000, guid: 91a2065e4f10579469c1c57964224e5e, type: 2}
 --- !u!4 &797931020
 Transform:
   m_ObjectHideFlags: 0

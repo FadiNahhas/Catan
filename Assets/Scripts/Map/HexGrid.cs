@@ -1,13 +1,17 @@
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Map
 {
     public class HexGrid : MonoBehaviour
     {
-        [SerializeField] private int gridRadius = 3;
-        [SerializeField] private float hexSize = 1f;
-
+        [TabGroup("Board Visuals")][SerializeField] private int gridRadius = 3;
+        [TabGroup("Board Visuals")][SerializeField] private float hexSize = 1f;
+        [TabGroup("Board Visuals")][SerializeField] private float hexThickness = 0.1f;
+        
+        [TabGroup("Map Configuration")][SerializeField] private MapConfiguration mapConfiguration;
+        
         private Dictionary<(int, int), HexCell> _cells;
         private Dictionary<Vector3, HexVertex> _vertices;
         
@@ -20,6 +24,8 @@ namespace Map
 
         private void GenerateGrid()
         {
+            List<CellType> shuffledList = HexHelper.GenerateCells(mapConfiguration);
+            
             for (int q = -gridRadius; q <= gridRadius; q++)
             {
                 int r1 = Mathf.Max(-gridRadius, -q - gridRadius);
@@ -27,9 +33,36 @@ namespace Map
                 for (int r = r1; r <= r2; r++)
                 {
                     var position = HexToPosition(q, r);
-                    var cell = new HexCell(q, r, position);
+                    CellType type;
+                    if (q == -gridRadius || q == gridRadius || r == r1 || r == r2)
+                    {
+                        // If it is, set as water cell
+                        type = CellType.Water;
+                    }
+                    else
+                    {
+                        // If it's not, choose a random CellType
+                        if (shuffledList.Count > 0)
+                        {
+                            type = shuffledList[0];
+                            Debug.Log(type.ToString());
+                            shuffledList.RemoveAt(0);
+                        }
+                        else
+                        {
+                            type = CellType.Water;
+                        }
+                    }
+                    
+                    var cell = new HexCell(q, r, position, type);
                     _cells.Add((q, r), cell);
+                    
+                    var material = new Material(Shader.Find("Universal Render Pipeline/Unlit"))
+                    {
+                        color = HexHelper.GetColor(cell.Type)
+                    };
                     CreateVertices(cell);
+                    cell.ApplyTexture(material, hexThickness);
                 }
             }
         }
