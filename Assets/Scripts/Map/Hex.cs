@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Map
 {
+    [Serializable]
     public enum CellType
     {
         Desert,
@@ -33,7 +34,7 @@ namespace Map
             };
         }
 
-        public static List<CellType> GenerateCells(MapConfiguration configuration)
+        public static List<CellType> GenerateBoard(MapConfiguration configuration)
         {
             List<CellType> cells = new();
 
@@ -64,7 +65,7 @@ namespace Map
     }
 
     [Serializable]
-    public class HexCell
+    public class TileData
     {
         public Vector3 Position { get; private set; }
         public List<HexVertex> Vertices { get; private set; }
@@ -72,17 +73,16 @@ namespace Map
         public int Q { get; private set; }
         public int R { get; private set; }
         
-        public CellType Type { get; private set; }
+        public float Height { get; private set; }
         
-        public bool HasRobber { get; private set; }
-
-        public Mesh CreateMesh(float height)
+        public Mesh CreateMesh()
         {
+            // Create a new mesh
             Mesh mesh = new Mesh();
 
             // Create top and bottom vertices
             Vector3[] topVertices = Vertices.Select(v => v.Position - Position).ToArray();
-            Vector3[] bottomVertices = Vertices.Select(v => v.Position - Position - new Vector3(0, height, 0)).ToArray();
+            Vector3[] bottomVertices = Vertices.Select(v => v.Position - Position - new Vector3(0, Height, 0)).ToArray();
 
             // Combine top and bottom vertices
             Vector3[] vertices = topVertices.Concat(bottomVertices).ToArray();
@@ -125,32 +125,13 @@ namespace Map
 
             return mesh;
         }
-
-        public void ApplyTexture(Material material, float height = 0.1f)
-        {
-            Mesh mesh = CreateMesh(height);
-
-            GameObject cell = new GameObject("Hex Cell")
-            {
-                transform =
-                {
-                    position = Position
-                }
-            };
-
-            MeshFilter meshFilter = cell.AddComponent<MeshFilter>();
-            meshFilter.mesh = mesh;
-            
-            MeshRenderer meshRenderer = cell.AddComponent<MeshRenderer>();
-            meshRenderer.material = material;
-        }
         
-        public HexCell(int q, int r, Vector3 position, CellType type)
+        public TileData(int q, int r, Vector3 position, float height)
         {
             Position = position;
             Q = q;
             R = r;
-            Type = type;
+            Height = height;
             Vertices = new List<HexVertex>();
         }
     }

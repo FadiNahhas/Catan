@@ -12,20 +12,18 @@ namespace Map
         
         [TabGroup("Map Configuration")][SerializeField] private MapConfiguration mapConfiguration;
         
-        private Dictionary<(int, int), HexCell> _cells;
+        private Dictionary<(int, int), Tile> _tiles;
         private Dictionary<Vector3, HexVertex> _vertices;
         
         void Start()
         {
-            _cells = new Dictionary<(int, int), HexCell>();
+            _tiles = new Dictionary<(int, int), Tile>();
             _vertices = new Dictionary<Vector3, HexVertex>();
             GenerateGrid();
         }
 
         private void GenerateGrid()
         {
-            List<CellType> shuffledList = HexHelper.GenerateCells(mapConfiguration);
-            
             for (int q = -gridRadius; q <= gridRadius; q++)
             {
                 int r1 = Mathf.Max(-gridRadius, -q - gridRadius);
@@ -33,36 +31,40 @@ namespace Map
                 for (int r = r1; r <= r2; r++)
                 {
                     var position = HexToPosition(q, r);
-                    CellType type;
-                    if (q == -gridRadius || q == gridRadius || r == r1 || r == r2)
+                    var cell = new TileData(q, r, position, hexThickness);
+                    var tile = new GameObject($"Tile {q}, {r}").AddComponent<Tile>();
+                    _tiles.Add((q, r), tile);
+                    CreateVertices(cell);
+                    tile.Initialize(cell);
+                }
+            }
+        }
+        
+        [Button("Randomize Board")]
+        private void RandomizeBoard()
+        {
+            List<CellType> shuffledList = HexHelper.GenerateBoard(mapConfiguration);
+
+            // Loop through tiles and set type of edge tiles to water and everything else based on the shuffled list
+            foreach (var tile in _tiles.Values)
+            {
+                if (Mathf.Abs(tile.Data.Q) == gridRadius || Mathf.Abs(tile.Data.R) == gridRadius || Mathf.Abs(tile.Data.Q + tile.Data.R) == gridRadius)
+                {
+                    tile.SetType(CellType.Water);
+                }
+                else
+                {
+                    // Check if shuffledList is not empty before accessing its elements
+                    if (shuffledList.Count > 0)
                     {
-                        // If it is, set as water cell
-                        type = CellType.Water;
+                        tile.SetType(shuffledList[0]);
+                        shuffledList.RemoveAt(0);
                     }
                     else
                     {
-                        // If it's not, choose a random CellType
-                        if (shuffledList.Count > 0)
-                        {
-                            type = shuffledList[0];
-                            Debug.Log(type.ToString());
-                            shuffledList.RemoveAt(0);
-                        }
-                        else
-                        {
-                            type = CellType.Water;
-                        }
+                        // shuffledList is empty, skip setting the type or set it to a default value
+                        tile.SetType(CellType.Water);
                     }
-                    
-                    var cell = new HexCell(q, r, position, type);
-                    _cells.Add((q, r), cell);
-                    
-                    var material = new Material(Shader.Find("Universal Render Pipeline/Unlit"))
-                    {
-                        color = HexHelper.GetColor(cell.Type)
-                    };
-                    CreateVertices(cell);
-                    cell.ApplyTexture(material, hexThickness);
                 }
             }
         }
@@ -74,14 +76,14 @@ namespace Map
             return new Vector3(x, 0, z);
         }
 
-        private void CreateVertices(HexCell cell)
+        private void CreateVertices(TileData tileData)
         {
-            Vector3[] corners = GetHexCorners(cell.Position);
+            Vector3[] corners = GetHexCorners(tileData.Position);
 
             foreach (Vector3 corner in corners)
             {
                 HexVertex vertex = FindOrCreateVertex(corner);
-                cell.Vertices.Add(vertex);
+                tileData.Vertices.Add(vertex);
             }
         }
 
@@ -111,15 +113,15 @@ namespace Map
 
         private void OnDrawGizmos()
         {
-            if (_cells == null || _vertices == null) return;
+            if (_tiles == null || _vertices == null) return;
             
-            foreach (var cell in _cells.Values)
+            foreach (var cell in _tiles.Values)
             {
                 // Draw cell center
                 Gizmos.color = Color.red;
-                Gizmos.DrawSphere(cell.Position, 0.1f);
+                Gizmos.DrawSphere(cell.Data.Position, 0.1f);
                 
-                Vector3[] corners = GetHexCorners(cell.Position);
+                Vector3[] corners = GetHexCorners(cell.Data.Position);
                 for (int i = 0; i < 6; i++)
                 {
                     // Draw cell edges
