@@ -10,7 +10,7 @@ namespace Map
         [TabGroup("Board Visuals")][SerializeField] private float hexSize = 1f;
         [TabGroup("Board Visuals")][SerializeField] private float hexThickness = 0.1f;
         
-        [TabGroup("Map Configuration")][SerializeField] private MapConfiguration mapConfiguration;
+        [TabGroup("Map Configuration")][SerializeField][InlineEditor] private MapConfiguration mapConfiguration;
         
         private Dictionary<(int, int), Tile> _tiles;
         private Dictionary<Vector3, HexVertex> _vertices;
