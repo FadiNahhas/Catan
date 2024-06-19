@@ -32,11 +32,22 @@ namespace Map
     {
         public Vector3 Position { get; private set; }
         public List<HexVertex> Vertices { get; private set; }
+
+        public Vector3[] Corners { get; private set; }
         
         public int Q { get; private set; }
         public int R { get; private set; }
         
         public float Height { get; private set; }
+        
+        public TileData(int q, int r, Vector3 position, float height)
+        {
+            Position = position;
+            Q = q;
+            R = r;
+            Height = height;
+            Vertices = new List<HexVertex>();
+        }
         
         public Mesh CreateMesh()
         {
@@ -89,13 +100,6 @@ namespace Map
             return mesh;
         }
         
-        public TileData(int q, int r, Vector3 position, float height)
-        {
-            Position = position;
-            Q = q;
-            R = r;
-            Height = height;
-            Vertices = new List<HexVertex>();
-        }
+        public void SetCorners(Vector3[] corners) => Corners = corners;
     }
 }

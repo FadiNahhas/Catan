@@ -56,9 +56,9 @@ namespace Map
         
         public static void CreateVertices(TileData tileData, float hexSize, Dictionary<Vector3, HexVertex> vertices)
         {
-            var corners = GetHexCorners(tileData.Position, hexSize);
+            tileData.SetCorners(GetHexCorners(tileData.Position, hexSize));
 
-            foreach (var corner in corners)
+            foreach (var corner in tileData.Corners)
             {
                 var vertex = FindOrCreateVertex(corner, vertices);
                 tileData.Vertices.Add(vertex);

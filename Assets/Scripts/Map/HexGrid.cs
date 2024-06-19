@@ -114,18 +114,17 @@ namespace Map
 
                 Gizmos.color = tile.IsHovered ? Color.green : Color.red;
                 Gizmos.DrawSphere(tile.Data.Position, tile.IsHovered ? 0.2f : 0.1f);
-                
-                var corners = HexHelper.GetHexCorners(tile.Data.Position, hexSize);
+
                 for (var i = 0; i < 6; i++)
                 {
                     // Draw cell edges
                     
                     Gizmos.color = tile.IsHovered ? Color.red : Color.blue;
-                    Gizmos.DrawLine(corners[i], corners[(i + 1) % 6]);
+                    Gizmos.DrawLine(tile.Data.Corners[i], tile.Data.Corners[(i + 1) % 6]);
                     
                     // Draw road building spots
                     Gizmos.color = tile.IsHovered ? Color.green : Color.yellow;
-                    Gizmos.DrawSphere((corners[i] + corners[(i + 1) % 6])/2, 0.05f);
+                    Gizmos.DrawSphere((tile.Data.Corners[i] + tile.Data.Corners[(i + 1) % 6])/2, 0.05f);
                 }
             }
             
