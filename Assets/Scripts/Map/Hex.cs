@@ -17,43 +17,6 @@ namespace Map
         Water
     }
 
-    public static class HexHelper
-    {
-        public static Color GetColor(CellType type)
-        {
-            return type switch
-            {
-                CellType.Desert => new Color(1f, 0.9f, 0.6f),
-                CellType.Wood => new Color(0.1f, 0.5f, 0.1f),
-                CellType.Brick => new Color(0.8f, 0.2f, 0.1f),
-                CellType.Ore => new Color(0.6f, 0.6f, 0.6f),
-                CellType.Grain => new Color(0.9f, 0.9f, 0.1f),
-                CellType.Wool => new Color(0.4f, 0.9f, 0.4f),
-                CellType.Water => new Color(0.3f, 0.6f, 1f),
-                _ => Color.black
-            };
-        }
-
-        public static List<CellType> GenerateBoard(MapConfiguration configuration)
-        {
-            List<CellType> cells = new();
-
-            foreach (var cellTypeCount in configuration.cellTypeCounts)
-            {
-                for (int i = 0; i < cellTypeCount.count; i++)
-                {
-                    cells.Add(cellTypeCount.type);
-                }
-            }
-            
-            // Shuffle the list
-            System.Random random = new System.Random();
-            cells = cells.OrderBy(x => random.Next()).ToList();
-            
-            return cells;
-        }
-    }
-    
     public class HexVertex
     {
         public Vector3 Position { get; private set; }

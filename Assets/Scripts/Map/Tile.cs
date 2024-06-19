@@ -14,7 +14,6 @@ namespace Map
         private MeshRenderer _meshRenderer;
         private MeshCollider _meshCollider;
         
-        
         public void Initialize(TileData data)
         {
             Data = data;

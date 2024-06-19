@@ -19,31 +19,52 @@ namespace Map
         {
             _tiles = new Dictionary<(int, int), Tile>();
             _vertices = new Dictionary<Vector3, HexVertex>();
-            GenerateGrid();
+            GenerateBoard();
         }
 
-        private void GenerateGrid()
+        #region Board Functions
+
+        /// <summary>
+        /// Generates the hexagonal board
+        /// </summary>
+        private void GenerateBoard()
         {
-            for (int q = -gridRadius; q <= gridRadius; q++)
+            // Loop through each cell in the grid
+            for (var q = -gridRadius; q <= gridRadius; q++)
             {
-                int r1 = Mathf.Max(-gridRadius, -q - gridRadius);
-                int r2 = Mathf.Min(gridRadius, -q + gridRadius);
-                for (int r = r1; r <= r2; r++)
+                // Calculate the range of cells in the current row
+                var r1 = Mathf.Max(-gridRadius, -q - gridRadius);
+                var r2 = Mathf.Min(gridRadius, -q + gridRadius);
+                for (var r = r1; r <= r2; r++)
                 {
-                    var position = HexToPosition(q, r);
-                    var cell = new TileData(q, r, position, hexThickness);
+                    // Convert the hex grid coordinates (q, r) to world space position (x, y, z)
+                    var position = HexHelper.HexToPosition(q, r, hexSize);
+                    
+                    // Create a new TileData object
+                    var tileData = new TileData(q, r, position, hexThickness);
+                    
+                    // Generate the vertices for the cell. These vertices will be used to create the mesh
+                    HexHelper.CreateVertices(tileData, hexSize, _vertices);
+                    
+                    // Create a new GameObject for the tile and add the Tile component
                     var tile = new GameObject($"Tile {q}, {r}").AddComponent<Tile>();
+                    // Set the parent of the tile to the HexGrid object
+                    tile.transform.SetParent(transform);
+                    
+                    // Add the tile to the dictionary and initialize it
                     _tiles.Add((q, r), tile);
-                    CreateVertices(cell);
-                    tile.Initialize(cell);
+                    tile.Initialize(tileData);
                 }
             }
         }
-        
-        [Button("Randomize Board")]
-        private void RandomizeBoard()
+
+        /// <summary>
+        /// Randomizes the map by shuffling the list of cell types based on the configuration
+        /// </summary>
+        [Button]
+        private void GenerateMap()
         {
-            List<CellType> shuffledList = HexHelper.GenerateBoard(mapConfiguration);
+            var shuffledList = HexHelper.GenerateMap(mapConfiguration);
 
             // Loop through tiles and set type of edge tiles to water and everything else based on the shuffled list
             foreach (var tile in _tiles.Values)
@@ -69,67 +90,41 @@ namespace Map
             }
         }
         
-        private Vector3 HexToPosition(int q, int r)
+        /// <summary>
+        /// Clears the board by setting all tiles to water
+        /// </summary>
+        [Button("Clear Board")]
+        private void ClearBoard()
         {
-            var z = hexSize * (Mathf.Sqrt(3f) * (r + q / 2f));
-            var x = hexSize * (3f / 2f * q);
-            return new Vector3(x, 0, z);
-        }
-
-        private void CreateVertices(TileData tileData)
-        {
-            Vector3[] corners = GetHexCorners(tileData.Position);
-
-            foreach (Vector3 corner in corners)
+            foreach (var tile in _tiles.Values)
             {
-                HexVertex vertex = FindOrCreateVertex(corner);
-                tileData.Vertices.Add(vertex);
+                tile.SetType(CellType.Water);
             }
         }
-
-        private Vector3[] GetHexCorners(Vector3 center)
-        {
-            Vector3[] corners = new Vector3[6];
-            for (int i = 0; i < 6; i++)
-            {
-                float angle = 60 * i;
-                float angleRad = Mathf.Deg2Rad * angle;
-                corners[i] = new Vector3(center.x + hexSize * Mathf.Cos(angleRad),
-                    0f,
-                    center.z + hexSize * Mathf.Sin(angleRad));
-            }
-
-            return corners;
-        }
-
-        private HexVertex FindOrCreateVertex(Vector3 position)
-        {
-            if (_vertices.ContainsKey(position)) return _vertices[position];
-            
-            HexVertex vertex = new HexVertex(position);
-            _vertices.Add(position, vertex);
-            return _vertices[position];
-        }
-
+        
+        #endregion
+        
         private void OnDrawGizmos()
         {
             if (_tiles == null || _vertices == null) return;
             
-            foreach (var cell in _tiles.Values)
+            foreach (var tile in _tiles.Values)
             {
                 // Draw cell center
-                Gizmos.color = Color.red;
-                Gizmos.DrawSphere(cell.Data.Position, 0.1f);
+
+                Gizmos.color = tile.IsHovered ? Color.green : Color.red;
+                Gizmos.DrawSphere(tile.Data.Position, tile.IsHovered ? 0.2f : 0.1f);
                 
-                Vector3[] corners = GetHexCorners(cell.Data.Position);
-                for (int i = 0; i < 6; i++)
+                var corners = HexHelper.GetHexCorners(tile.Data.Position, hexSize);
+                for (var i = 0; i < 6; i++)
                 {
                     // Draw cell edges
-                    Gizmos.color = Color.blue;
+                    
+                    Gizmos.color = tile.IsHovered ? Color.red : Color.blue;
                     Gizmos.DrawLine(corners[i], corners[(i + 1) % 6]);
                     
                     // Draw road building spots
-                    Gizmos.color = Color.yellow;
+                    Gizmos.color = tile.IsHovered ? Color.green : Color.yellow;
                     Gizmos.DrawSphere((corners[i] + corners[(i + 1) % 6])/2, 0.05f);
                 }
             }
