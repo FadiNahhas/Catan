@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -82,11 +83,42 @@ namespace Map
 
         private static HexVertex FindOrCreateVertex(Vector3 position, Dictionary<Vector3, HexVertex> vertices)
         {
-            if (vertices.ContainsKey(position)) return vertices[position];
+            var roundedPosition = new Vector3(Mathf.Round(position.x * 1000) / 1000, 0, Mathf.Round(position.z * 1000) / 1000);
             
+            if (vertices.ContainsKey(roundedPosition))
+            {
+                return vertices[roundedPosition];
+            }
+
             var vertex = new HexVertex(position);
-            vertices.Add(position, vertex);
-            return vertices[position];
+            Debug.Log($"Vertex at {roundedPosition}");
+            vertices.Add(roundedPosition, vertex);
+            return vertices[roundedPosition];
+        }
+        
+        public static void SetNeighborsForAllVertices(Dictionary<Vector3, HexVertex> vertices, Dictionary<(int, int), Tile> tiles)
+        {
+            foreach (var vertex in vertices.Values)
+            {
+                List<HexVertex> neighbors = new List<HexVertex>();
+
+                foreach (var tile in tiles.Values)
+                {
+                    if (tile.Data.Vertices.Contains(vertex))
+                    {
+                        // Get the indices of the current vertex and its neighbors in the tile's vertices list
+                        int currentIndex = tile.Data.Vertices.IndexOf(vertex);
+                        int previousIndex = (currentIndex + tile.Data.Vertices.Count - 1) % tile.Data.Vertices.Count;
+                        int nextIndex = (currentIndex + 1) % tile.Data.Vertices.Count;
+
+                        // Add the neighbors to the list
+                        neighbors.Add(tile.Data.Vertices[previousIndex]);
+                        neighbors.Add(tile.Data.Vertices[nextIndex]);
+                    }
+                }
+
+                vertex.SetNeighbors(neighbors.Distinct().ToList());
+            }
         }
     }
 }

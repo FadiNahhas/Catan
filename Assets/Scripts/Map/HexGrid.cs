@@ -10,6 +10,8 @@ namespace Map
         [TabGroup("Board Visuals")][SerializeField] private float hexSize = 1f;
         [TabGroup("Board Visuals")][SerializeField] private float hexThickness = 0.1f;
         
+        [TabGroup("Prefabs")][SerializeField] private BuildButton buildButtonPrefab;
+        
         [TabGroup("Map Configuration")][SerializeField][InlineEditor] private MapConfiguration mapConfiguration;
         
         private Dictionary<(int, int), Tile> _tiles;
@@ -56,6 +58,8 @@ namespace Map
                     tile.Initialize(tileData);
                 }
             }
+            HexHelper.SetNeighborsForAllVertices(_vertices, _tiles);
+            SpawnBuildButtons();
         }
 
         /// <summary>
@@ -104,6 +108,30 @@ namespace Map
         
         #endregion
         
+        private void SpawnBuildButtons()
+        {
+            foreach (var vertex in _vertices.Values)
+            {
+                /*
+                 * If a vertex is adjacent to less than 3 tiles, that means it's an outer vertex and not a buildable spot
+                 * If it is, instantiate a build button at the vertex position
+                 */
+                
+                int adjacentTiles = 0;
+                foreach (var tile in _tiles.Values)
+                {
+                    if (tile.Data.Vertices.Contains(vertex)) adjacentTiles++;
+                }
+                
+                if (adjacentTiles < 3) continue;
+                
+                var buildButton = Instantiate(buildButtonPrefab, vertex.Position, Quaternion.identity);
+                vertex.SetButton(buildButton);
+                buildButton.transform.SetParent(transform);
+                buildButton.Initialize(vertex.Position, BuildingType.Settlement);
+            }
+        }
+        
         private void OnDrawGizmos()
         {
             if (_tiles == null || _vertices == null) return;
@@ -126,13 +154,6 @@ namespace Map
                     Gizmos.color = tile.IsHovered ? Color.green : Color.yellow;
                     Gizmos.DrawSphere((tile.Data.Corners[i] + tile.Data.Corners[(i + 1) % 6])/2, 0.05f);
                 }
-            }
-            
-            // Draw settlement building spots
-            Gizmos.color = Color.green;
-            foreach (var vertex in _vertices.Values)
-            {
-                Gizmos.DrawSphere(vertex.Position, 0.05f);
             }
             
         }

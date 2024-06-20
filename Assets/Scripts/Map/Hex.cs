@@ -20,10 +20,34 @@ namespace Map
     public class HexVertex
     {
         public Vector3 Position { get; private set; }
+
+        public BuildButton Button { get; private set; }
+        
+        public List<HexVertex> Neighbors { get; private set; }
         
         public HexVertex(Vector3 position)
         {
             Position = position;
+        }
+        
+        public void SetNeighbors(List<HexVertex> neighbors) => Neighbors = neighbors;
+        
+        public void SetButton(BuildButton button)
+        {
+            Button = button;
+            Button.onBuild += OnBuild;
+        }
+
+        public void HideButton()
+        {
+            if (Button == null) return;
+            Button.gameObject.SetActive(false);
+        }
+
+        private void OnBuild()
+        {
+            Button.onBuild -= OnBuild;
+            Neighbors.ForEach(n => n.HideButton());
         }
     }
 

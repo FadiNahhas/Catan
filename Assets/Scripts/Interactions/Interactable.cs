@@ -5,8 +5,19 @@ namespace Interactions
 {
     public class Interactable : MonoBehaviour, IInteractable, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
-        public bool IsHovered { get; private set; }
+        private bool _isHovered;
         
+        public bool IsHovered
+        {
+            get => _isHovered;
+            private set
+            {
+                if (_isHovered == value) return;
+                _isHovered = value;
+                OnHoverUpdated();
+            }
+        }
+
         public virtual void Interact()
         {
             
@@ -26,5 +37,7 @@ namespace Interactions
         {
             
         }
+        
+        protected virtual void OnHoverUpdated(){}
     }
 }
