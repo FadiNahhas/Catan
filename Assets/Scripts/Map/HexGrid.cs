@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Map
 {
-    public class HexGrid : MonoBehaviour
+    public class HexGrid : SerializedMonoBehaviour
     {
         [TabGroup("Board Visuals")][SerializeField] private int gridRadius = 3;
         [TabGroup("Board Visuals")][SerializeField] private float hexSize = 1f;
@@ -14,13 +16,15 @@ namespace Map
         
         [TabGroup("Map Configuration")][SerializeField][InlineEditor] private MapConfiguration mapConfiguration;
         
-        private Dictionary<(int, int), Tile> _tiles;
-        private Dictionary<Vector3, HexVertex> _vertices;
+        [OdinSerialize] [DictionaryDrawerSettings(KeyLabel = "Coordinates", ValueLabel = "Tiles")] private Dictionary<(int, int), Tile> _tiles;
+        [OdinSerialize] [DictionaryDrawerSettings(KeyLabel = "Position", ValueLabel = "Vertices")] private Dictionary<Vector3, HexVertex> _vertices;
+        [OdinSerialize] [DictionaryDrawerSettings(KeyLabel = "Positions", ValueLabel = "Corners")] private Dictionary<Vector3, HexCorner> _corners;
         
         void Start()
         {
             _tiles = new Dictionary<(int, int), Tile>();
             _vertices = new Dictionary<Vector3, HexVertex>();
+            _corners = new Dictionary<Vector3, HexCorner>();
             GenerateBoard();
         }
 
@@ -46,7 +50,7 @@ namespace Map
                     var tileData = new TileData(q, r, position, hexThickness);
                     
                     // Generate the vertices for the cell. These vertices will be used to create the mesh
-                    HexHelper.CreateVertices(tileData, hexSize, _vertices);
+                    HexHelper.CreateVertices(tileData, hexSize, _vertices, _corners);
                     
                     // Create a new GameObject for the tile and add the Tile component
                     var tile = new GameObject($"Tile {q}, {r}").AddComponent<Tile>();
@@ -61,7 +65,7 @@ namespace Map
             HexHelper.SetNeighborsForAllVertices(_vertices, _tiles);
             SpawnBuildButtons();
         }
-
+        
         /// <summary>
         /// Randomizes the map by shuffling the list of cell types based on the configuration
         /// </summary>
@@ -110,26 +114,41 @@ namespace Map
         
         private void SpawnBuildButtons()
         {
-            foreach (var vertex in _vertices.Values)
+            foreach (var corner in _corners.Values)
             {
-                /*
-                 * If a vertex is adjacent to less than 3 tiles, that means it's an outer vertex and not a buildable spot
-                 * If it is, instantiate a build button at the vertex position
-                 */
-                
-                int adjacentTiles = 0;
-                foreach (var tile in _tiles.Values)
+                if (corner.ButtonsSpawned)
                 {
-                    if (tile.Data.Vertices.Contains(vertex)) adjacentTiles++;
+                    Debug.Log("Skipping corner");
+                    continue;
                 }
                 
-                if (adjacentTiles < 3) continue;
-                
-                var buildButton = Instantiate(buildButtonPrefab, vertex.Position, Quaternion.identity);
-                vertex.SetButton(buildButton);
-                buildButton.transform.SetParent(transform);
-                buildButton.Initialize(vertex.Position, BuildingType.Settlement);
+                var btn = InstantiateButton(corner.Position , BuildingType.Settlement);
+                corner.SetButtonsSpawned();
             }
+            
+            foreach (var vertex in _vertices.Values)
+            {
+                // Instantiate a build button at the vertex position
+                var btn = InstantiateButton(HexHelper.GetRoadPosition(vertex), BuildingType.Road, HexHelper.GetRoadRotation(vertex));
+                // Set the button on the vertex
+                vertex.SetButton(btn);
+            }
+        }
+
+        private BuildButton InstantiateButton(Vector3 pos, BuildingType type)
+        {
+            var obj = Instantiate(buildButtonPrefab, pos, Quaternion.identity);
+            obj.Initialize(pos, type);
+            obj.transform.SetParent(transform);
+            return obj;
+        }
+        
+        private BuildButton InstantiateButton(Vector3 pos, BuildingType type, Quaternion rotation)
+        {
+            var obj = Instantiate(buildButtonPrefab, pos, rotation);
+            obj.Initialize(pos, type);
+            obj.transform.SetParent(transform);
+            return obj;
         }
         
         private void OnDrawGizmos()
@@ -148,12 +167,15 @@ namespace Map
                     // Draw cell edges
                     
                     Gizmos.color = tile.IsHovered ? Color.red : Color.blue;
-                    Gizmos.DrawLine(tile.Data.Corners[i], tile.Data.Corners[(i + 1) % 6]);
-                    
-                    // Draw road building spots
-                    Gizmos.color = tile.IsHovered ? Color.green : Color.yellow;
-                    Gizmos.DrawSphere((tile.Data.Corners[i] + tile.Data.Corners[(i + 1) % 6])/2, 0.05f);
+                    Gizmos.DrawLine(tile.Data.Corners[i].Position, tile.Data.Corners[(i + 1) % 6].Position);
                 }
+            }
+
+            foreach (var ver in _vertices.Values)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawSphere(HexHelper.GetRoadPosition(ver), 0.1f);
+                
             }
             
         }

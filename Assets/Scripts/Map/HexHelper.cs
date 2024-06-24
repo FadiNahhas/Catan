@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -7,6 +6,7 @@ namespace Map
 {
     public static class HexHelper
     {
+        public const int NumCorners = 6;
         public static Color GetColor(CellType type)
         {
             return type switch
@@ -55,45 +55,74 @@ namespace Map
             return new Vector3(x, 0, z);
         }
         
-        public static void CreateVertices(TileData tileData, float hexSize, Dictionary<Vector3, HexVertex> vertices)
+        public static void CreateVertices(TileData tileData, float hexSize, Dictionary<Vector3, HexVertex> vertices, Dictionary<Vector3, HexCorner> corners)
         {
-            tileData.SetCorners(GetHexCorners(tileData.Position, hexSize));
+            tileData.SetCorners(GetHexCorners(tileData.Position, hexSize, corners));
 
-            foreach (var corner in tileData.Corners)
+            for (var i = 0; i < tileData.Corners.Length; i++)
             {
-                var vertex = FindOrCreateVertex(corner, vertices);
+                var corner1 = tileData.Corners[i];
+                var corner2 = tileData.Corners[(i + 1) % NumCorners];
+                var vertex = FindOrCreateVertex(corner1, corner2, vertices);
                 tileData.Vertices.Add(vertex);
+                var roundedPosition = new Vector3(Mathf.Round(corner1.Position.x * 1000) / 1000, 0,
+                    Mathf.Round(corner1.Position.z * 1000) / 1000);
+
+                if (corners.ContainsKey(roundedPosition))
+                {
+                    continue;
+                }
+
+                corners.Add(roundedPosition, corner1);
             }
         }
         
-        public static Vector3[] GetHexCorners(Vector3 center, float hexSize)
+        public static HexCorner[] GetHexCorners(Vector3 center, float hexSize, Dictionary<Vector3, HexCorner> cornersDictionary)
         {
-            var corners = new Vector3[6];
+            var corners = new HexCorner[6];
             for (var i = 0; i < 6; i++)
             {
                 float angle = 60 * i;
                 var angleRad = Mathf.Deg2Rad * angle;
-                corners[i] = new Vector3(center.x + hexSize * Mathf.Cos(angleRad),
+                var position = new Vector3(center.x + hexSize * Mathf.Cos(angleRad),
                     0f,
                     center.z + hexSize * Mathf.Sin(angleRad));
+
+                corners[i] = FindOrCreateCorner(position, cornersDictionary);
             }
 
             return corners;
         }
-
-        private static HexVertex FindOrCreateVertex(Vector3 position, Dictionary<Vector3, HexVertex> vertices)
+        
+        private static HexCorner FindOrCreateCorner(Vector3 position, Dictionary<Vector3, HexCorner> corners)
         {
             var roundedPosition = new Vector3(Mathf.Round(position.x * 1000) / 1000, 0, Mathf.Round(position.z * 1000) / 1000);
             
-            if (vertices.ContainsKey(roundedPosition))
+            if (corners.ContainsKey(roundedPosition))
             {
-                return vertices[roundedPosition];
+                return corners[roundedPosition];
             }
 
-            var vertex = new HexVertex(position);
-            Debug.Log($"Vertex at {roundedPosition}");
-            vertices.Add(roundedPosition, vertex);
-            return vertices[roundedPosition];
+            var corner = new HexCorner(position);
+            corners.Add(roundedPosition, corner);
+            return corners[roundedPosition];
+        }
+
+        private static HexVertex FindOrCreateVertex(HexCorner startCorner, HexCorner endCorner, Dictionary<Vector3, HexVertex> vertices)
+        {
+            
+            // Round the sum of the x and z coordinates of the start and end corners to 3 decimal places
+            var uniqueVertexIdentifier = GetUniqueVertexIdentifier(startCorner.Position, endCorner.Position);
+            
+            if (vertices.TryGetValue(uniqueVertexIdentifier, out var foundVertex))
+            {
+                return foundVertex;
+            }
+
+            var vertex = new HexVertex(startCorner, endCorner);
+            vertices.Add(uniqueVertexIdentifier, vertex);
+            
+            return vertices[uniqueVertexIdentifier];
         }
         
         public static void SetNeighborsForAllVertices(Dictionary<Vector3, HexVertex> vertices, Dictionary<(int, int), Tile> tiles)
@@ -119,6 +148,28 @@ namespace Map
 
                 vertex.SetNeighbors(neighbors.Distinct().ToList());
             }
+        }
+        
+        public static Vector3 GetUniqueVertexIdentifier(Vector3 position1, Vector3 position2)
+        {
+            var combinedPosition = position1 + position2;
+            
+            return new Vector3(Mathf.Round(combinedPosition.x * 1000) / 1000, 0, Mathf.Round(combinedPosition.z * 1000) / 1000);
+        }
+
+        public static Vector3 GetRoadPosition(HexVertex vertex)
+        {
+            return (vertex.Position1 + vertex.Position2) / 2;
+        }
+        
+        // Get road rotation on Y axis based on the direction of the road
+        public static Quaternion GetRoadRotation(HexVertex vertex)
+        {
+            var midPoint = GetRoadPosition(vertex);
+            
+            var direction = (vertex.Position1 - midPoint).normalized;
+
+            return Quaternion.LookRotation(direction);
         }
     }
 }

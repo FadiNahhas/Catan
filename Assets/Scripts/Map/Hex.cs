@@ -17,47 +17,13 @@ namespace Map
         Water
     }
 
-    public class HexVertex
-    {
-        public Vector3 Position { get; private set; }
-
-        public BuildButton Button { get; private set; }
-        
-        public List<HexVertex> Neighbors { get; private set; }
-        
-        public HexVertex(Vector3 position)
-        {
-            Position = position;
-        }
-        
-        public void SetNeighbors(List<HexVertex> neighbors) => Neighbors = neighbors;
-        
-        public void SetButton(BuildButton button)
-        {
-            Button = button;
-            Button.onBuild += OnBuild;
-        }
-
-        public void HideButton()
-        {
-            if (Button == null) return;
-            Button.gameObject.SetActive(false);
-        }
-
-        private void OnBuild()
-        {
-            Button.onBuild -= OnBuild;
-            Neighbors.ForEach(n => n.HideButton());
-        }
-    }
-
     [Serializable]
     public class TileData
     {
         public Vector3 Position { get; private set; }
         public List<HexVertex> Vertices { get; private set; }
 
-        public Vector3[] Corners { get; private set; }
+        public HexCorner[] Corners { get; private set; }
         
         public int Q { get; private set; }
         public int R { get; private set; }
@@ -79,8 +45,8 @@ namespace Map
             Mesh mesh = new Mesh();
 
             // Create top and bottom vertices
-            Vector3[] topVertices = Vertices.Select(v => v.Position - Position).ToArray();
-            Vector3[] bottomVertices = Vertices.Select(v => v.Position - Position - new Vector3(0, Height, 0)).ToArray();
+            Vector3[] topVertices = Corners.Select(c => c.Position - Position).ToArray();
+            Vector3[] bottomVertices = Corners.Select(c => c.Position - Position - new Vector3(0, Height, 0)).ToArray();
 
             // Combine top and bottom vertices
             Vector3[] vertices = topVertices.Concat(bottomVertices).ToArray();
@@ -124,6 +90,24 @@ namespace Map
             return mesh;
         }
         
-        public void SetCorners(Vector3[] corners) => Corners = corners;
+        public void SetCorners(HexCorner[] corners)
+        {
+            Corners = corners;
+
+            for (int i = 0; i < Corners.Length; i++)
+            {
+                if (!Corners[i].Neighbors.Contains(Corners[(i + 1) % Corners.Length]))
+                {
+                    Debug.Log("Adding neighbor");
+                    Corners[i].Neighbors.Add(Corners[(i + 1) % Corners.Length]);
+                }
+
+                if (!Corners[i].Neighbors.Contains(Corners[(i + 5) % Corners.Length]))
+                {
+                    Debug.Log("Adding neighbor");
+                    Corners[i].Neighbors.Add(Corners[(i + 5) % Corners.Length]);
+                }
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Building;
 using Interactions;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -31,7 +32,7 @@ namespace Map
 
         public override void Interact()
         {
-            BuildManager.Current.Build(_buildingType, 0, _position);
+            BuildManager.Current.Build(_buildingType, _position,transform.rotation);
             onBuild?.Invoke();
         }
 

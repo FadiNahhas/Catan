@@ -9,6 +9,8 @@ namespace Map
         public TileData Data { get; private set; }
 
         [SerializeField] private CellType cellType;
+        public int AssignedNumber { get; private set; }
+        
         [field: SerializeField] public bool HasRobber { get; private set; }
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
@@ -32,6 +34,11 @@ namespace Map
         {
             cellType = type;
             _meshRenderer.material = MaterialHelper.GetMaterial(HexHelper.GetColor(cellType));
+        }
+        
+        public void SetNumber(int number)
+        {
+            AssignedNumber = number;
         }
     }
 }
