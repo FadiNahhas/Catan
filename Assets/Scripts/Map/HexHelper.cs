@@ -125,31 +125,6 @@ namespace Map
             return vertices[uniqueVertexIdentifier];
         }
         
-        public static void SetNeighborsForAllVertices(Dictionary<Vector3, HexVertex> vertices, Dictionary<(int, int), Tile> tiles)
-        {
-            foreach (var vertex in vertices.Values)
-            {
-                List<HexVertex> neighbors = new List<HexVertex>();
-
-                foreach (var tile in tiles.Values)
-                {
-                    if (tile.Data.Vertices.Contains(vertex))
-                    {
-                        // Get the indices of the current vertex and its neighbors in the tile's vertices list
-                        int currentIndex = tile.Data.Vertices.IndexOf(vertex);
-                        int previousIndex = (currentIndex + tile.Data.Vertices.Count - 1) % tile.Data.Vertices.Count;
-                        int nextIndex = (currentIndex + 1) % tile.Data.Vertices.Count;
-
-                        // Add the neighbors to the list
-                        neighbors.Add(tile.Data.Vertices[previousIndex]);
-                        neighbors.Add(tile.Data.Vertices[nextIndex]);
-                    }
-                }
-
-                vertex.SetNeighbors(neighbors.Distinct().ToList());
-            }
-        }
-        
         public static Vector3 GetUniqueVertexIdentifier(Vector3 position1, Vector3 position2)
         {
             var combinedPosition = position1 + position2;

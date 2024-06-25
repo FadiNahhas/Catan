@@ -1,24 +1,25 @@
 using System.Collections.Generic;
+using Helpers;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Map
 {
-    public class HexGrid : SerializedMonoBehaviour
+    public class HexGrid : Singleton<HexGrid>
     {
         [TabGroup("Board Visuals")][SerializeField] private int gridRadius = 3;
         [TabGroup("Board Visuals")][SerializeField] private float hexSize = 1f;
         [TabGroup("Board Visuals")][SerializeField] private float hexThickness = 0.1f;
+
+        public float HexThickness => hexThickness;
         
         [TabGroup("Prefabs")][SerializeField] private BuildButton buildButtonPrefab;
         
         [TabGroup("Map Configuration")][SerializeField][InlineEditor] private MapConfiguration mapConfiguration;
         
-        [OdinSerialize] [DictionaryDrawerSettings(KeyLabel = "Coordinates", ValueLabel = "Tiles")] private Dictionary<(int, int), Tile> _tiles;
-        [OdinSerialize] [DictionaryDrawerSettings(KeyLabel = "Position", ValueLabel = "Vertices")] private Dictionary<Vector3, HexVertex> _vertices;
-        [OdinSerialize] [DictionaryDrawerSettings(KeyLabel = "Positions", ValueLabel = "Corners")] private Dictionary<Vector3, HexCorner> _corners;
+        private Dictionary<(int, int), Tile> _tiles;
+        private Dictionary<Vector3, HexVertex> _vertices;
+        private Dictionary<Vector3, HexCorner> _corners;
         
         void Start()
         {
@@ -62,7 +63,6 @@ namespace Map
                     tile.Initialize(tileData);
                 }
             }
-            HexHelper.SetNeighborsForAllVertices(_vertices, _tiles);
             SpawnBuildButtons();
         }
         
@@ -116,13 +116,8 @@ namespace Map
         {
             foreach (var corner in _corners.Values)
             {
-                if (corner.ButtonsSpawned)
-                {
-                    Debug.Log("Skipping corner");
-                    continue;
-                }
-                
                 var btn = InstantiateButton(corner.Position , BuildingType.Settlement);
+                corner.AssignButton(btn);
                 corner.SetButtonsSpawned();
             }
             
@@ -131,7 +126,7 @@ namespace Map
                 // Instantiate a build button at the vertex position
                 var btn = InstantiateButton(HexHelper.GetRoadPosition(vertex), BuildingType.Road, HexHelper.GetRoadRotation(vertex));
                 // Set the button on the vertex
-                vertex.SetButton(btn);
+                vertex.AssignButton(btn);
             }
         }
 
@@ -178,6 +173,38 @@ namespace Map
                 
             }
             
+        }
+        
+        [TabGroup("Buttons"), Button]
+        private void HideAllButtons()
+        {
+            foreach (var corner in _corners.Values)
+            {
+                corner.ToggleButtonVisibility(false);
+            }
+            
+            foreach (var vertex in _vertices.Values)
+            {
+                vertex.ToggleButtonVisibility(false);
+            }
+        }
+        
+        [TabGroup("Buttons"), Button]
+        private void ToggleSettlementButtons()
+        {
+            foreach (var corner in _corners.Values)
+            {
+                corner.ToggleButtonVisibility(!corner.IsButtonVisible);
+            }
+        }
+        
+        [TabGroup("Buttons"), Button]
+        private void ToggleRoadButtons()
+        {
+            foreach (var vertex in _vertices.Values)
+            {
+                vertex.ToggleButtonVisibility(!vertex.IsButtonVisible);
+            }
         }
     }
 }

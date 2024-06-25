@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Map
@@ -18,35 +19,55 @@ namespace Map
 
         public BuildButton Button { get; private set; }
         
-        public bool ButtonSpawned { get; private set; }
+        public bool IsButtonVisible => Button.gameObject.activeSelf;
+
+        public bool CanBuild { get; private set; }
         
         public List<HexVertex> Neighbors { get; private set; }
+        
+        public List<Tile> AdjacentTiles { get; private set; }
         
         public HexVertex(HexCorner pos1, HexCorner pos2)
         {
             Corner1 = pos1;
             Corner2 = pos2;
             Neighbors = new List<HexVertex>();
+            AdjacentTiles = new List<Tile>();
         }
         
-        public void SetNeighbors(List<HexVertex> neighbors) => Neighbors = neighbors;
-        
-        public void SetButton(BuildButton button)
+        public void AssignButton(BuildButton button)
         {
             Button = button;
             Button.onBuild += OnBuild;
         }
 
-        public void HideButton()
+        public void SetCanBuild(bool value = true)
         {
-            if (Button == null) return;
-            Button.gameObject.SetActive(false);
+            CanBuild = value;
+            if (Button != null) Button.gameObject.SetActive(value);   
         }
-
+        
         private void OnBuild()
         {
             Button.onBuild -= OnBuild;
-            Neighbors.ForEach(n => n.HideButton());
+            
+            SetCanBuild(false);
+        }
+        
+        public void ToggleButtonVisibility(bool value = true)
+        {
+            if (!CanBuild) return;
+            Button.gameObject.SetActive(value);
+        }
+        
+        public void AddTile(Tile tile)
+        {
+            AdjacentTiles.Add(tile);
+        }
+
+        public void OnMapGenerated()
+        {
+            SetCanBuild(AdjacentTiles.Any(t => t.Resource != CellType.Water));
         }
     }
 }

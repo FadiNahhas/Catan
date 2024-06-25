@@ -18,6 +18,7 @@ namespace Building
 
         public GameObject Build(BuildingType type, Vector3 pos)
         {
+            pos.y = HexGrid.Current.HexThickness;
             var obj = Instantiate(GetPrefab(type), pos, Quaternion.identity);
             obj.GetComponent<MeshRenderer>().material.color = GetPlayerColor(currentPlayer);
             return obj;
@@ -25,6 +26,7 @@ namespace Building
         
         public GameObject Build(BuildingType type, Vector3 pos, Quaternion rotation)
         {
+            pos.y = HexGrid.Current.HexThickness;
             var obj = Instantiate(GetPrefab(type), pos, rotation);
             obj.GetComponent<MeshRenderer>().material.color = GetPlayerColor(currentPlayer);
             return obj;
