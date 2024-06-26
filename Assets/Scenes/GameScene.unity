@@ -426,7 +426,7 @@ MonoBehaviour:
   gridRadius: 3
   hexSize: 1
   hexThickness: 0.1
-  buildButtonPrefab: {fileID: 3645789346907739867, guid: 34dcf992d05fbe34a9f146c2d0dc0187,
+  buildingPointPrefab: {fileID: 3645789346907739867, guid: 34dcf992d05fbe34a9f146c2d0dc0187,
     type: 3}
   mapConfiguration: {fileID: 11400000, guid: 91a2065e4f10579469c1c57964224e5e, type: 2}
 --- !u!4 &797931020
@@ -590,11 +590,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dad4335952dcc594ba74717909bfc585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settlementPrefab: {fileID: 6238771477186246045, guid: 3bc7dfc4480243e459ebddf9c2b91df2,
+  settlementPrefab: {fileID: -1578428670923090105, guid: 3bc7dfc4480243e459ebddf9c2b91df2,
     type: 3}
-  roadPrefab: {fileID: 903983213518366156, guid: da8dee36549509b48b830fc18ab44a1c,
+  roadPrefab: {fileID: -1812290015433323804, guid: da8dee36549509b48b830fc18ab44a1c,
     type: 3}
-  cityPrefab: {fileID: 0}
+  cityPrefab: {fileID: -1578428670923090105, guid: c10298afd42f5d046b46feb0a31347c8,
+    type: 3}
   playerColors:
   - {r: 0.754717, g: 0, b: 0, a: 1}
   - {r: 0, g: 0.2, b: 0.99215686, a: 1}

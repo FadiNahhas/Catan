@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1154627141287541372}
   - component: {fileID: 3645789346907739867}
   m_Layer: 0
-  m_Name: BuildButton
+  m_Name: Build Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,7 +104,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.7
+  m_Radius: 0.8
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3645789346907739867
 MonoBehaviour:
@@ -120,3 +120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: fdcba7b9e1738bb41a230ad6dd52865f, type: 2}
   hoverMaterial: {fileID: 2100000, guid: f4040c3ecab54694094ce63266baebeb, type: 2}
+  meshRenderer: {fileID: 0}
+  piece: {fileID: 0}
+  position: {x: 0, y: 0, z: 0}
+  buildingType: 0

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Building.Pieces;
 using Helpers;
+using Hex;
 using Map;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -8,31 +10,31 @@ namespace Building
 {
     public class BuildManager : Singleton<BuildManager>
     {
-        [TabGroup("Prefabs")] public GameObject settlementPrefab;
-        [TabGroup("Prefabs")] public GameObject roadPrefab;
-        [TabGroup("Prefabs")] public GameObject cityPrefab;
+        [TabGroup("Prefabs")] public Piece settlementPrefab;
+        [TabGroup("Prefabs")] public Piece roadPrefab;
+        [TabGroup("Prefabs")] public Piece cityPrefab;
         
         [TabGroup("Colors")][SerializeField] private List<Color> playerColors;
         
         public int currentPlayer = 0;
 
-        public GameObject Build(BuildingType type, Vector3 pos)
+        public Piece Build(BuildingType type, Vector3 pos)
         {
             pos.y = HexGrid.Current.HexThickness;
-            var obj = Instantiate(GetPrefab(type), pos, Quaternion.identity);
-            obj.GetComponent<MeshRenderer>().material.color = GetPlayerColor(currentPlayer);
-            return obj;
+            var piece = Instantiate(GetPrefab(type), pos, Quaternion.identity);
+            piece.Initialize(currentPlayer);
+            return piece;
         }
         
-        public GameObject Build(BuildingType type, Vector3 pos, Quaternion rotation)
+        public Piece Build(BuildingType type, Vector3 pos, Quaternion rotation)
         {
             pos.y = HexGrid.Current.HexThickness;
-            var obj = Instantiate(GetPrefab(type), pos, rotation);
-            obj.GetComponent<MeshRenderer>().material.color = GetPlayerColor(currentPlayer);
-            return obj;
+            var piece = Instantiate(GetPrefab(type), pos, rotation);
+            piece.Initialize(currentPlayer);
+            return piece;
         }
     
-        private GameObject GetPrefab(BuildingType type)
+        private Piece GetPrefab(BuildingType type)
         {
             switch (type)
             {
@@ -47,7 +49,7 @@ namespace Building
             }
         }
 
-        private Color GetPlayerColor(int player)
+        public Color GetPlayerColor(int player)
         {
             if (player < 0 || player >= playerColors.Count) return Color.white;
             return playerColors[player];

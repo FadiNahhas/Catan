@@ -1,10 +1,15 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Interactions
 {
-    public class Interactable : MonoBehaviour, IInteractable, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public abstract class Interactable : MonoBehaviour, IInteractable, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
+        [SerializeField] protected Material defaultMaterial;
+        [SerializeField] protected Material hoverMaterial;
+        [SerializeField, ReadOnly] private MeshRenderer meshRenderer;
+        
         private bool _isHovered;
         
         public bool IsHovered
@@ -18,10 +23,12 @@ namespace Interactions
             }
         }
 
-        public virtual void Interact()
+        protected virtual void Awake()
         {
-            
+            meshRenderer = GetComponent<MeshRenderer>();
         }
+
+        public abstract void Interact();
         
         public virtual void OnPointerEnter(PointerEventData eventData)
         {
@@ -35,9 +42,16 @@ namespace Interactions
 
         public virtual void OnPointerClick(PointerEventData eventData)
         {
+            if (!IsHovered) return;
             
+            Interact();
         }
-        
-        protected virtual void OnHoverUpdated(){}
+
+        protected virtual void OnHoverUpdated()
+        {
+            if (!defaultMaterial || !hoverMaterial) return;
+            
+            meshRenderer.material = IsHovered ? hoverMaterial : defaultMaterial;
+        }
     }
 }

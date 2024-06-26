@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hex;
 using UnityEngine;
 
 namespace Map

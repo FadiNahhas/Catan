@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Map
+namespace Hex
 {
     [Serializable]
     public enum CellType
@@ -18,7 +18,7 @@ namespace Map
     }
 
     [Serializable]
-    public class TileData
+    public class HexTile
     {
         public Vector3 Position { get; private set; }
         public List<HexVertex> Vertices { get; private set; }
@@ -30,7 +30,7 @@ namespace Map
         
         public float Height { get; private set; }
         
-        public TileData(int q, int r, Vector3 position, float height)
+        public HexTile(int q, int r, Vector3 position, float height)
         {
             Position = position;
             Q = q;

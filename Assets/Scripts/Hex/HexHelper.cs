@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Map;
 using UnityEngine;
 
-namespace Map
+namespace Hex
 {
     public static class HexHelper
     {
@@ -55,16 +56,16 @@ namespace Map
             return new Vector3(x, 0, z);
         }
         
-        public static void CreateVertices(TileData tileData, float hexSize, Dictionary<Vector3, HexVertex> vertices, Dictionary<Vector3, HexCorner> corners)
+        public static void CreateVertices(HexTile hexTile, float hexSize, Dictionary<Vector3, HexVertex> vertices, Dictionary<Vector3, HexCorner> corners)
         {
-            tileData.SetCorners(GetHexCorners(tileData.Position, hexSize, corners));
+            hexTile.SetCorners(GetHexCorners(hexTile.Position, hexSize, corners));
 
-            for (var i = 0; i < tileData.Corners.Length; i++)
+            for (var i = 0; i < hexTile.Corners.Length; i++)
             {
-                var corner1 = tileData.Corners[i];
-                var corner2 = tileData.Corners[(i + 1) % NumCorners];
+                var corner1 = hexTile.Corners[i];
+                var corner2 = hexTile.Corners[(i + 1) % NumCorners];
                 var vertex = FindOrCreateVertex(corner1, corner2, vertices);
-                tileData.Vertices.Add(vertex);
+                hexTile.Vertices.Add(vertex);
                 var roundedPosition = new Vector3(Mathf.Round(corner1.Position.x * 1000) / 1000, 0,
                     Mathf.Round(corner1.Position.z * 1000) / 1000);
 
