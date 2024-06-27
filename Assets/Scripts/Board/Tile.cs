@@ -1,9 +1,11 @@
-﻿using Helpers;
+﻿using Building.Pieces;
+using DG.Tweening;
+using Helpers;
 using Hex;
 using Interactions;
 using UnityEngine;
 
-namespace Map
+namespace Board
 {
     public class Tile : Interactable
     {
@@ -11,7 +13,8 @@ namespace Map
 
         [SerializeField] private CellType cellType;
         public CellType Resource => cellType;
-        public int AssignedNumber { get; private set; }
+        private Number _number;
+        public int Number => _number.Value;
         
         [field: SerializeField] public bool HasRobber { get; private set; }
         private MeshFilter _meshFilter;
@@ -28,7 +31,6 @@ namespace Map
         public void Initialize(HexTile data)
         {
             Data = data;
-            transform.position = data.Position;
             //_meshFilter = gameObject.AddComponent<MeshFilter>();
             _meshFilter.mesh = data.CreateMesh();
             
@@ -65,9 +67,11 @@ namespace Map
             }
         }
         
-        public void SetNumber(int number)
+        public void AssignNumber(Number number)
         {
-            AssignedNumber = number;
+            _number = number;
+            number.transform.SetParent(transform);
+            number.transform.DOMove(Data.Position, 0.5f).SetEase(Ease.InOutCubic);
         }
 
         public override void Interact()

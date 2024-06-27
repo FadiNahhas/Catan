@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Board;
 using Map;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace Hex
     public static class HexHelper
     {
         public const int NumCorners = 6;
+        public const int AmountPerNumber = 2;
         public static Color GetColor(CellType type)
         {
             return type switch
@@ -42,6 +44,32 @@ namespace Hex
             return cells;
         }
         
+        public static List<int> GenerateNumbers(NumbersConfiguration configuration)
+        {
+            List<int> numbers = new();
+
+            foreach (var numberCount in configuration.numberCounts)
+            {
+                if (numberCount.isSingle)
+                {
+                    numbers.Add(numberCount.number);
+                }
+                else
+                {
+                    for (int i = 0; i < AmountPerNumber; i++)
+                    {
+                        numbers.Add(numberCount.number);
+                    }
+                }
+            }
+            
+            // Shuffle the list
+            System.Random random = new System.Random();
+            numbers = numbers.OrderBy(x => random.Next()).ToList();
+            
+            return numbers;
+        }
+        
         /// <summary>
         /// Converts hex grid coordinates to world space position
         /// </summary>
@@ -51,8 +79,9 @@ namespace Hex
         /// <returns>The world space position of the hex cell</returns>
         public static Vector3 HexToPosition(int q, int r, float hexSize)
         {
-            var z = hexSize * (Mathf.Sqrt(3f) * (r + q / 2f));
-            var x = hexSize * (3f / 2f * q);
+            var x = hexSize * (Mathf.Sqrt(3f) * (r + q / 2f));
+            var z = hexSize * (3f / 2f * q);
+            
             return new Vector3(x, 0, z);
         }
         
@@ -83,7 +112,7 @@ namespace Hex
             var corners = new HexCorner[6];
             for (var i = 0; i < 6; i++)
             {
-                float angle = 60 * i;
+                float angle = 60 * i - 30;
                 var angleRad = Mathf.Deg2Rad * angle;
                 var position = new Vector3(center.x + hexSize * Mathf.Cos(angleRad),
                     0f,

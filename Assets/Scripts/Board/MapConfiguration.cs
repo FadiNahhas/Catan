@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Hex;
 using UnityEngine;
 
-namespace Map
+namespace Board
 {
     [CreateAssetMenu(fileName = "Map Configuration", menuName = "Catan/Map Configuration")]
     public class MapConfiguration : ScriptableObject

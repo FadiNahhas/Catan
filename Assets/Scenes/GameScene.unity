@@ -428,7 +428,11 @@ MonoBehaviour:
   hexThickness: 0.1
   buildingPointPrefab: {fileID: 3645789346907739867, guid: 34dcf992d05fbe34a9f146c2d0dc0187,
     type: 3}
+  numberPiecePrefab: {fileID: 6173587766249032751, guid: d06a8d1632f5bab48b895bca8f435b3d,
+    type: 3}
   mapConfiguration: {fileID: 11400000, guid: 91a2065e4f10579469c1c57964224e5e, type: 2}
+  numbersConfiguration: {fileID: 11400000, guid: d3507c2c20ee5304bae4c78b6acd992b,
+    type: 2}
 --- !u!4 &797931020
 Transform:
   m_ObjectHideFlags: 0
