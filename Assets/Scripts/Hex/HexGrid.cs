@@ -77,7 +77,8 @@ namespace Hex
                         tile.Initialize(tileData);
                     }
                 }
-                //SpawnBuildButtons();
+                
+                SpawnNumbers();
                 
                 yield return new WaitForSeconds(0.1f);
                 
@@ -85,12 +86,11 @@ namespace Hex
 
                 yield return PositionTiles();
                 
-                
-                SpawnNumbers();
-                
                 yield return new WaitForSeconds(0.1f);
                 
                 yield return AssignNumbers();
+                
+                SpawnBuildButtons();
             }
             
             /// <summary>
@@ -128,7 +128,7 @@ namespace Hex
             {
                 for (int i = _tiles.Count - 1; i >= 0 ; i--)
                 {
-                    _tiles.Values.ElementAt(i).transform.DOMove(_tiles.Values.ElementAt(i).Data.Position, 0.5f).SetEase(Ease.InOutCubic);
+                    _tiles.Values.ElementAt(i).transform.DOMove(_tiles.Values.ElementAt(i).Data.Position, 0.3f).SetEase(Ease.InOutCubic);
                     yield return new WaitForSeconds(0.2f);
                 }
             }
@@ -160,7 +160,7 @@ namespace Hex
                     
                     i++;
                     
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(0.15f);
                 }
             }
             
@@ -192,6 +192,11 @@ namespace Hex
                     var buildPoint = InstantiateButton(HexHelper.GetRoadPosition(vertex), BuildingType.Road, HexHelper.GetRoadRotation(vertex));
                     // Set the button on the vertex
                     vertex.AssignBuildPoint(buildPoint);
+                }
+
+                foreach (var tile in _tiles.Values)
+                {
+                    tile.RefreshButtons();
                 }
             }
 

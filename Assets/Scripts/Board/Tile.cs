@@ -55,18 +55,21 @@ namespace Board
         {
             cellType = type;
             _meshRenderer.material = MaterialHelper.GetMaterial(HexHelper.GetColor(cellType));
-            
+        }
+
+        public void RefreshButtons()
+        {
             foreach (var vertex in Data.Vertices)
             {
                 vertex.OnMapGenerated();
             }
-            
+
             foreach (var corner in Data.Corners)
             {
                 corner.OnMapGenerated();
             }
         }
-        
+
         public void AssignNumber(Number number)
         {
             _number = number;
