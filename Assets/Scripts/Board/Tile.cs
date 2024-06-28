@@ -1,8 +1,10 @@
-﻿using Building.Pieces;
+﻿using System.Collections.Generic;
+using Building.Pieces;
 using DG.Tweening;
 using Helpers;
 using Hex;
 using Interactions;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Board
@@ -10,35 +12,33 @@ namespace Board
     public class Tile : Interactable
     {
         public HexTile Data { get; private set; }
-
-        [SerializeField] private CellType cellType;
+        [TabGroup("Data")][SerializeField] private List<Tile> neighbours;
+        public List<Tile> Neighbours => neighbours;
+        [TabGroup("State")][SerializeField] private CellType cellType;
         public CellType Resource => cellType;
-        private Number _number;
-        public int Number => _number.Value;
         
-        [field: SerializeField] public bool HasRobber { get; private set; }
-        private MeshFilter _meshFilter;
-        private MeshRenderer _meshRenderer;
-        private MeshCollider _meshCollider;
+        [TabGroup("State")][SerializeField] private Number number;
+        public Number Number => number;
+        
+        [field: TabGroup("State"), SerializeField, ReadOnly] public bool HasRobber { get; private set; }
+        
+        [TabGroup("Components")][SerializeField][ReadOnly] private MeshFilter meshFilter;
+        [TabGroup("Components")][SerializeField][ReadOnly] private MeshCollider meshCollider;
 
         protected override void Awake()
         {
-            _meshFilter = gameObject.AddComponent<MeshFilter>();
-            _meshRenderer = gameObject.AddComponent<MeshRenderer>();
-            _meshCollider = gameObject.AddComponent<MeshCollider>();
+            meshFilter = gameObject.AddComponent<MeshFilter>();
+            meshRenderer = gameObject.AddComponent<MeshRenderer>();
+            meshCollider = gameObject.AddComponent<MeshCollider>();
         }
 
         public void Initialize(HexTile data)
         {
             Data = data;
-            //_meshFilter = gameObject.AddComponent<MeshFilter>();
-            _meshFilter.mesh = data.CreateMesh();
-            
-            //_meshRenderer = gameObject.AddComponent<MeshRenderer>();
-            _meshRenderer.material = MaterialHelper.GetDefaultMaterial();
-            
-            //_meshCollider = gameObject.AddComponent<MeshCollider>();
-            _meshCollider.sharedMesh = _meshFilter.mesh;
+            neighbours = new List<Tile>();
+            meshFilter.mesh = data.CreateMesh();
+            meshRenderer.material = MaterialHelper.GetDefaultMaterial();
+            meshCollider.sharedMesh = meshFilter.mesh;
             
             foreach (var vertex in Data.Vertices)
             {
@@ -54,7 +54,7 @@ namespace Board
         public void SetType(CellType type)
         {
             cellType = type;
-            _meshRenderer.material = MaterialHelper.GetMaterial(HexHelper.GetColor(cellType));
+            meshRenderer.material = MaterialHelper.GetMaterial(HexHelper.GetColor(cellType));
         }
 
         public void RefreshButtons()
@@ -70,16 +70,29 @@ namespace Board
             }
         }
 
-        public void AssignNumber(Number number)
+        public void AssignNumber(Number num)
         {
-            _number = number;
-            number.transform.SetParent(transform);
-            number.transform.DOMove(Data.Position, 0.5f).SetEase(Ease.InOutCubic);
+            number = num;
+
+            if (num != null)
+            {
+                num.transform.SetParent(transform);
+                num.transform.DOMove(Data.Position, 0.5f).SetEase(Ease.InOutCubic);
+            }
+        }
+        
+        public void AddNeighbour(Tile tile)
+        {
+            if (neighbours.Contains(tile)) return;
+            
+            neighbours.Add(tile);
         }
 
-        public override void Interact()
+        public override void Interact() {}
+        
+        public int GetNumber()
         {
-            
+            return !number ? 0 : number.Value;
         }
     }
 }

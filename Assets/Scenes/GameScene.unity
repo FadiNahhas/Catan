@@ -434,7 +434,7 @@ MonoBehaviour:
   numbersConfiguration: {fileID: 11400000, guid: d3507c2c20ee5304bae4c78b6acd992b,
     type: 2}
   numberStackSpawnPosition: {x: -7, y: 0, z: 4}
-  tileStackSpawnPosition: {x: 7, y: 0, z: 4}
+  tileStackSpawnPosition: {x: -7, y: 0, z: 2}
 --- !u!4 &797931020
 Transform:
   m_ObjectHideFlags: 0

@@ -98,13 +98,11 @@ namespace Hex
             {
                 if (!Corners[i].Neighbors.Contains(Corners[(i + 1) % Corners.Length]))
                 {
-                    Debug.Log("Adding neighbor");
                     Corners[i].Neighbors.Add(Corners[(i + 1) % Corners.Length]);
                 }
 
                 if (!Corners[i].Neighbors.Contains(Corners[(i + 5) % Corners.Length]))
                 {
-                    Debug.Log("Adding neighbor");
                     Corners[i].Neighbors.Add(Corners[(i + 5) % Corners.Length]);
                 }
             }

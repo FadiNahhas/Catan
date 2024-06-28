@@ -6,9 +6,9 @@ namespace Interactions
 {
     public abstract class Interactable : MonoBehaviour, IInteractable, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
-        [SerializeField] protected Material defaultMaterial;
-        [SerializeField] protected Material hoverMaterial;
-        [SerializeField, ReadOnly] private MeshRenderer meshRenderer;
+        [TabGroup("Materials")][SerializeField] protected Material defaultMaterial;
+        [TabGroup("Materials")][SerializeField] protected Material hoverMaterial;
+        [TabGroup("Components"), SerializeField, ReadOnly] protected MeshRenderer meshRenderer;
         
         private bool _isHovered;
         
