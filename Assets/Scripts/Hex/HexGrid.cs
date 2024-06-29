@@ -13,6 +13,12 @@ namespace Hex
 {
     public class HexGrid : Singleton<HexGrid>
     {
+        private const int MaxIterations = 100;
+        private const int ProblematicNumber1 = 6;
+        private const int ProblematicNumber2 = 8;
+        
+        #region Visuals
+
         [TabGroup("Board Visuals")] [SerializeField]
         private int gridRadius = 3;
 
@@ -21,11 +27,18 @@ namespace Hex
 
         [TabGroup("Board Visuals")] [SerializeField]
         private float hexThickness = 0.1f;
+        
+        [TabGroup("Board Visuals")] [SerializeField]
+        private Vector3 numberStackSpawnPosition;
+
+        [TabGroup("Board Visuals")] [SerializeField]
+        private Vector3 tileStackSpawnPosition;
 
         public float HexThickness => hexThickness;
 
-        [TabGroup("Prefabs")] [SerializeField] private BuildingPoint buildingPointPrefab;
-        [TabGroup("Prefabs")] [SerializeField] private Number numberPiecePrefab;
+        #endregion
+        
+        #region Configuration
 
         [TabGroup("Configuration")] [SerializeField]
         private MapConfiguration mapConfiguration;
@@ -33,16 +46,27 @@ namespace Hex
         [TabGroup("Configuration")] [SerializeField]
         private NumbersConfiguration numbersConfiguration;
 
-        [TabGroup("Configuration")] [SerializeField]
-        private Vector3 numberStackSpawnPosition;
+        [TabGroup("Configuration")] [SerializeField] [Unit(Units.Second)]
+        private float tilePlacementDelay = 0.1f;
 
-        [TabGroup("Configuration")] [SerializeField]
-        private Vector3 tileStackSpawnPosition;
+        [TabGroup("Configuration")] [SerializeField] [Unit(Units.Second)]
+        private float numberPlacementDelay = 0.1f;
 
+        [TabGroup("Configuration")] [SerializeField] [Unit(Units.Second)]
+        private float numberSwapDelay = 0.1f;
+
+        #endregion
+        
+        [TabGroup("Prefabs")] [SerializeField] private BuildingPoint buildingPointPrefab;
+        [TabGroup("Prefabs")] [SerializeField] private Number numberPiecePrefab;
+        
         private Dictionary<(int, int), Tile> _tiles;
         private Dictionary<Vector3, HexVertex> _vertices;
         private Dictionary<Vector3, HexCorner> _corners;
         private List<Number> _numberPieces;
+
+        // State
+        private bool _isGeneratingBoard;
 
         private void Start()
         {
@@ -60,6 +84,8 @@ namespace Hex
         /// </summary>
         private IEnumerator GenerateBoard()
         {
+            _isGeneratingBoard = true;
+            
             // Loop through each row in the grid
             for (var r = -gridRadius; r <= gridRadius; r++)
             {
@@ -91,22 +117,21 @@ namespace Hex
             }
 
             SpawnNumbers();
-
-            yield return new WaitForSeconds(0.1f);
-
             GenerateMap();
 
             yield return PositionTiles();
 
-            yield return new WaitForSeconds(0.1f);
+            yield return GeneralHelpers.GetWait(tilePlacementDelay);
 
             yield return AssignNumbers();
-            
-            yield return new WaitForSeconds(1f);
+
+            yield return GeneralHelpers.GetWait(numberSwapDelay);
 
             yield return SwapProblematicTiles();
 
             SpawnBuildButtons();
+            
+            _isGeneratingBoard = false;
         }
 
         /// <summary>
@@ -149,7 +174,7 @@ namespace Hex
             {
                 _tiles.Values.ElementAt(i).transform.DOMove(_tiles.Values.ElementAt(i).Data.Position, 0.3f)
                     .SetEase(Ease.InOutCubic);
-                yield return new WaitForSeconds(0.1f);
+                yield return GeneralHelpers.GetWait(tilePlacementDelay);
             }
         }
 
@@ -193,17 +218,16 @@ namespace Hex
                     break;
                 }
 
-                yield return new WaitForSeconds(0.1f);
+                yield return GeneralHelpers.GetWait(numberPlacementDelay);
             }
         }
 
         private IEnumerator SwapProblematicTiles()
         {
             var conflictsExist = true;
-            var maxIterations = 100; // Safeguard against infinite loops
             var iterations = 0;
 
-            while (conflictsExist && iterations < maxIterations)
+            while (conflictsExist && iterations < MaxIterations)
             {
                 conflictsExist = false;
                 iterations++;
@@ -216,13 +240,35 @@ namespace Hex
                         if (TrySwapWithSafeTile(tile))
                         {
                             conflictsExist = true;
-                            yield return new WaitForSeconds(0.15f); // Delay for visualization
-                            break; // Restart the loop to reassess all tiles
+                            yield return GeneralHelpers.GetWait(numberSwapDelay);
+                            break;
                         }
                 }
             }
 
-            if (iterations >= maxIterations) Debug.LogWarning("Reached maximum iterations. Some conflicts may remain.");
+            if (iterations >= MaxIterations) Debug.LogWarning("Reached maximum iterations. Some conflicts may remain.");
+        }
+
+        private void InitializeProblematicTiles(List<Tile> problematicTiles)
+        {
+            foreach (var tile in _tiles.Values)
+            {
+                if (IsProblematicTile(tile))
+                {
+                    problematicTiles.Add(tile);
+                }
+            }
+        }
+
+        private static bool IsProblematicTile(Tile tile)
+        {
+            return tile.Number && (tile.Number.Value == ProblematicNumber1 || tile.Number.Value == ProblematicNumber2) &&
+                   tile.NeighbourHasRedNumber();
+        }
+        
+        private bool IsProblematicNumber(int number)
+        {
+            return number is ProblematicNumber1 or ProblematicNumber2;
         }
 
         private bool TrySwapWithSafeTile(Tile problematicTile)
@@ -266,15 +312,6 @@ namespace Hex
             var tempNumber = tile1.Number;
             tile1.AssignNumber(tile2.Number);
             tile2.AssignNumber(tempNumber);
-        }
-
-        /// <summary>
-        ///     Clears the board by setting all tiles to water
-        /// </summary>
-        [Button("Clear Board")]
-        private void ClearBoard()
-        {
-            foreach (var tile in _tiles.Values) tile.SetType(CellType.Water);
         }
 
         #endregion
@@ -373,6 +410,8 @@ namespace Hex
         [Button]
         private void ClearAndRun()
         {
+            if (_isGeneratingBoard) return;
+            
             foreach (var tile in _tiles.Values) Destroy(tile.gameObject);
 
             foreach (var vertex in _vertices.Values) Destroy(vertex.BuildPoint.gameObject);
