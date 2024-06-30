@@ -14,8 +14,8 @@ namespace Hex
     public class HexGrid : Singleton<HexGrid>
     {
         private const int MaxIterations = 100;
-        private const int ProblematicNumber1 = 6;
-        private const int ProblematicNumber2 = 8;
+        public const int ProblematicNumber1 = 6;
+        public const int ProblematicNumber2 = 8;
         
         #region Visuals
 
@@ -112,7 +112,7 @@ namespace Hex
 
                     // Add the tile to the dictionary and initialize it
                     _tiles.Add((q, r), tile);
-                    tile.Initialize(tileData);
+                    tile.Init(tileData);
                 }
             }
 
@@ -221,7 +221,7 @@ namespace Hex
                 yield return GeneralHelpers.GetWait(numberPlacementDelay);
             }
         }
-
+        
         private IEnumerator SwapProblematicTiles()
         {
             var conflictsExist = true;
@@ -232,58 +232,30 @@ namespace Hex
                 conflictsExist = false;
                 iterations++;
 
-                foreach (var tile in _tiles.Values)
-                {
-                    if (tile.Number == null) continue;
+                var problematicTiles = _tiles.Values.Where(TileHelpers.IsProblematicTile).ToList();
 
-                    if ((tile.Number.Value == 6 || tile.Number.Value == 8) && tile.NeighbourHasRedNumber())
-                        if (TrySwapWithSafeTile(tile))
-                        {
-                            conflictsExist = true;
-                            yield return GeneralHelpers.GetWait(numberSwapDelay);
-                            break;
-                        }
+                if (problematicTiles.Any(TrySwapWithSafeTile))
+                {
+                    conflictsExist = true;
+                    yield return GeneralHelpers.GetWait(numberSwapDelay);
                 }
+                
+                yield return null;
             }
 
             if (iterations >= MaxIterations) Debug.LogWarning("Reached maximum iterations. Some conflicts may remain.");
         }
-
-        private void InitializeProblematicTiles(List<Tile> problematicTiles)
-        {
-            foreach (var tile in _tiles.Values)
-            {
-                if (IsProblematicTile(tile))
-                {
-                    problematicTiles.Add(tile);
-                }
-            }
-        }
-
-        private static bool IsProblematicTile(Tile tile)
-        {
-            return tile.Number && (tile.Number.Value == ProblematicNumber1 || tile.Number.Value == ProblematicNumber2) &&
-                   tile.NeighbourHasRedNumber();
-        }
         
-        private bool IsProblematicNumber(int number)
-        {
-            return number is ProblematicNumber1 or ProblematicNumber2;
-        }
-
         private bool TrySwapWithSafeTile(Tile problematicTile)
         {
             foreach (var tile in _tiles.Values)
             {
-                if (tile.Number == null) continue;
-
-                if (tile.Number.Value != 6 && tile.Number.Value != 8 && !tile.NeighbourHasRedNumber())
-                    // Check if swapping would create a new conflict
-                    if (!WouldCreateConflict(problematicTile, tile))
-                    {
-                        SwapNumbers(problematicTile, tile);
-                        return true;
-                    }
+                if (!TileHelpers.IsSafeTile(tile)) continue;
+                // Check if swapping would create a new conflict
+                if (WouldCreateConflict(problematicTile, tile)) continue;
+                
+                SwapNumbers(problematicTile, tile);
+                return true;
             }
 
             return false;

@@ -176,10 +176,5 @@ namespace Hex
 
             return Quaternion.LookRotation(direction);
         }
-
-        public static bool NeighbourHasRedNumber(this Tile tile)
-        {
-            return tile.Neighbours.Any(n => n.GetNumber() == 6 || n.GetNumber() == 8);
-        }
     }
 }
