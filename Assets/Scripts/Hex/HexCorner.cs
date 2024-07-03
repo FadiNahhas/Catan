@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Map;
+using Board;
 using UnityEngine;
 
 namespace Hex
@@ -12,9 +12,6 @@ namespace Hex
     {
         public Vector3 Position { get; private set; }
         public List<HexCorner> Neighbors { get; private set; }
-
-        public bool CanBuild => !(Neighbors.Any(n => n.BuildPoint.IsBuilt) || BuildPoint.IsBuilt);
-        
         public HexCorner(Vector3 position)
         {
             Position = position;
@@ -26,7 +23,7 @@ namespace Hex
         
         public override void Update()
         {
-            ToggleBuildPointVisibility(CanBuild || CanUpgrade());
+            ToggleBuildPointVisibility(CanBuild() || CanUpgrade());
             
             if (CanUpgrade())
                 BuildPoint.OnUpgrade += OnUpgrade;
@@ -48,11 +45,20 @@ namespace Hex
             Update();
         }
 
-        public bool CanUpgrade()
+        private bool CanUpgrade()
         {
+            if (!BuildPoint) return false;
+            
             if (!BuildPoint.IsBuilt) return false;
             
             return BuildPoint.Piece.Type != BuildingType.City;
+        }
+
+        private bool CanBuild()
+        {
+            var buildableNeighbours = Neighbors.Where(n => n.BuildPoint).ToList();
+            
+            return !(buildableNeighbours.Any(n => n.BuildPoint.IsBuilt) || BuildPoint.IsBuilt);
         }
     }
 }

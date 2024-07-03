@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using Board;
 using Building.Pieces;
 using Helpers;
 using Hex;
-using Map;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -20,7 +20,7 @@ namespace Building
 
         public Piece Build(BuildingType type, Vector3 pos)
         {
-            pos.y = HexGrid.Current.HexThickness;
+            pos.y = HexGrid.HexThickness;
             var piece = Instantiate(GetPrefab(type), pos, Quaternion.identity);
             piece.Initialize(currentPlayer);
             return piece;
@@ -28,7 +28,7 @@ namespace Building
         
         public Piece Build(BuildingType type, Vector3 pos, Quaternion rotation)
         {
-            pos.y = HexGrid.Current.HexThickness;
+            pos.y = HexGrid.HexThickness;
             var piece = Instantiate(GetPrefab(type), pos, rotation);
             piece.Initialize(currentPlayer);
             return piece;

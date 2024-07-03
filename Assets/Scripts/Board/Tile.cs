@@ -24,16 +24,11 @@ namespace Board
         
         
         [field: TabGroup("State"), SerializeField, ReadOnly] public bool HasRobber { get; private set; }
-        
-        [TabGroup("Components")][SerializeField][ReadOnly] private MeshFilter meshFilter;
-        [TabGroup("Components")][SerializeField][ReadOnly] private MeshCollider meshCollider;
+
 
         protected override void Awake()
         {
-            // Add components and initialize the list of neighbours
-            meshFilter = gameObject.AddComponent<MeshFilter>();
-            meshRenderer = gameObject.AddComponent<MeshRenderer>();
-            meshCollider = gameObject.AddComponent<MeshCollider>();
+            meshRenderer = gameObject.GetComponent<MeshRenderer>();
             neighbours = new List<Tile>();
         }
         
@@ -44,11 +39,6 @@ namespace Board
         public void Init(HexTile data)
         {
             Data = data;
-            
-            // Create mesh with default material
-            meshFilter.mesh = data.CreateMesh();
-            meshRenderer.material = MaterialHelper.GetDefaultMaterial();
-            meshCollider.sharedMesh = meshFilter.mesh;
             
             // Add tile reference to all of its vertices and corners
             foreach (var vertex in Data.Vertices)
@@ -68,8 +58,13 @@ namespace Board
         /// <param name="type">The type of the resource</param>
         public void SetType(CellType type)
         {
+            Debug.Log($"Setting type of {name} to {type}");
             cellType = type;
-            meshRenderer.material = MaterialHelper.GetMaterial(HexHelper.GetColor(cellType));
+
+            var materials = meshRenderer.materials;
+            materials[1] = MaterialHelper.GetMaterial(HexHelper.GetColor(cellType));
+            
+            meshRenderer.materials = materials;
         }
 
         /// <summary>

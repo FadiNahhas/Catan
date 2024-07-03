@@ -1,4 +1,4 @@
-﻿using Map;
+﻿using Board;
 using Sirenix.OdinInspector;
 using UnityEngine;
 

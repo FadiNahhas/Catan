@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Board;
-using Map;
 using UnityEngine;
 
 namespace Hex

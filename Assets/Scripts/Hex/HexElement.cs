@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Board;
-using Map;
 
 namespace Hex
 {
@@ -10,7 +9,6 @@ namespace Hex
     public abstract class HexElement
     {
         public BuildingPoint BuildPoint { get; private set; }
-        public bool BuildPointVisible => BuildPoint.gameObject.activeSelf;
         
         public bool IsInPlayableArea { get; private set; }
         
@@ -29,9 +27,12 @@ namespace Hex
         
         public virtual void ToggleBuildPointVisibility(bool value = true)
         {
-            if (BuildPoint == null) return;
-            
-            BuildPoint.gameObject.SetActive(IsInPlayableArea && value);
+            if (!BuildPoint) return;
+
+            if (IsInPlayableArea && value)
+                BuildPoint.Show();
+            else
+                BuildPoint.Hide();
         }   
         
         public void AddTile(Tile tile)
@@ -47,6 +48,13 @@ namespace Hex
 
             if (!IsInPlayableArea)
                 ToggleBuildPointVisibility(false);
+        }
+
+        public bool BuildPointVisible()
+        {
+            if (!BuildPoint) return false;
+
+            return BuildPoint.IsVisible;
         }
 
         public abstract void Update();
