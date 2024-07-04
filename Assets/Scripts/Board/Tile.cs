@@ -62,7 +62,7 @@ namespace Board
             cellType = type;
 
             var materials = meshRenderer.materials;
-            materials[1] = MaterialHelper.GetMaterial(HexHelper.GetColor(cellType));
+            materials[1] = MaterialHelper.GetMaterial(type);
             
             meshRenderer.materials = materials;
         }
