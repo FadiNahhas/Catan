@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Building;
 using Building.Pieces;
 using DG.Tweening;
 using Helpers;
@@ -109,5 +110,12 @@ namespace Board
         }
 
         public override void Interact() {}
+
+        public void SpawnAndAnimateProps()
+        {
+            var props = BuildManager.Current.SpawnProps(this);
+            
+            props.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
+        }
     }
 }

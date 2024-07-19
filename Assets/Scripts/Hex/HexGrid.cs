@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Board;
+using Building;
 using Building.Pieces;
 using DG.Tweening;
 using Helpers;
@@ -181,8 +182,10 @@ namespace Hex
         {
             for (var i = _tiles.Count - 1; i >= 0; i--)
             {
-                _tiles.Values.ElementAt(i).transform.DOMove(_tiles.Values.ElementAt(i).Data.Position - YOffset, 0.3f)
-                    .SetEase(Ease.InOutCubic);
+                var tile = _tiles.Values.ElementAt(i);
+                
+                tile.transform.DOMove(tile.Data.Position - YOffset, 0.3f)
+                    .SetEase(Ease.InOutCubic).OnComplete(tile.SpawnAndAnimateProps);
                 yield return GeneralHelpers.GetWait(tilePlacementDelay);
             }
         }

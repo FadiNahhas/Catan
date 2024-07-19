@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Board;
+using Building.Libraries;
 using Building.Pieces;
 using Helpers;
 using Hex;
@@ -13,6 +14,8 @@ namespace Building
         [TabGroup("Prefabs")] public Piece settlementPrefab;
         [TabGroup("Prefabs")] public Piece roadPrefab;
         [TabGroup("Prefabs")] public Piece cityPrefab;
+        
+        [TabGroup("Prefabs"), SerializeField] public TilePropsLibrary tilePropsLibrary;
         
         [TabGroup("Colors")][SerializeField] private List<Color> playerColors;
         
@@ -53,6 +56,17 @@ namespace Building
         {
             if (player < 0 || player >= playerColors.Count) return Color.white;
             return playerColors[player];
+        }
+
+        public GameObject SpawnProps(Tile tile)
+        {
+            var prefab = tilePropsLibrary.GetPrefab(tile.Resource);
+            if (prefab == null) return null;
+            
+            var prop = Instantiate(prefab, tile.transform);
+            prop.transform.localPosition = Vector3.zero;
+            prop.transform.localRotation = Quaternion.identity;
+            return prop;
         }
     }
 }
