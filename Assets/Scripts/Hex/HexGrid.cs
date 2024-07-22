@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Board;
-using Building;
 using Building.Pieces;
 using DG.Tweening;
 using Helpers;
@@ -312,7 +311,6 @@ namespace Hex
                 
                 var buildPoint = InstantiateButton(corner.Position, BuildingType.Settlement);
                 corner.AssignBuildPoint(buildPoint);
-                yield return GeneralHelpers.GetWait(0.025f);
 
             }
             
@@ -325,7 +323,6 @@ namespace Hex
                     HexHelper.GetRoadRotation(vertex));
                 // Set the button on the vertex
                 vertex.AssignBuildPoint(buildPoint);
-                yield return GeneralHelpers.GetWait(0.025f);
             }
 
             foreach (var tile in _tiles.Values) tile.RefreshButtons();

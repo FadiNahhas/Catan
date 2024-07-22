@@ -210,13 +210,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.53729963, y: 0, z: 0, w: 0.8433915}
-  m_LocalPosition: {x: 0, y: 8, z: -5}
+  m_LocalRotation: {x: 0.5735764, y: 0, z: 0, w: 0.8191521}
+  m_LocalPosition: {x: 0, y: 10, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 55, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 70, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1022,13 +1022,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dad4335952dcc594ba74717909bfc585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settlementPrefab: {fileID: -1578428670923090105, guid: 3bc7dfc4480243e459ebddf9c2b91df2,
-    type: 3}
-  roadPrefab: {fileID: -1812290015433323804, guid: da8dee36549509b48b830fc18ab44a1c,
-    type: 3}
-  cityPrefab: {fileID: -1578428670923090105, guid: c10298afd42f5d046b46feb0a31347c8,
-    type: 3}
   tilePropsLibrary: {fileID: 11400000, guid: 8cc44f1f147475b4a92f4970ea990302, type: 2}
+  piecesLibrary: {fileID: 11400000, guid: 35916462844570e41b038b15264d7f66, type: 2}
   playerColors:
   - {r: 0.754717, g: 0, b: 0, a: 1}
   - {r: 0, g: 0.2, b: 0.99215686, a: 1}

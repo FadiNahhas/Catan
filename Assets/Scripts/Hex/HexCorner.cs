@@ -54,7 +54,7 @@ namespace Hex
             return BuildPoint.Piece.Type != BuildingType.City;
         }
 
-        private bool CanBuild()
+        public override bool CanBuild()
         {
             var buildableNeighbours = Neighbors.Where(n => n.BuildPoint).ToList();
             

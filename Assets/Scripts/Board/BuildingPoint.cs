@@ -61,8 +61,6 @@ namespace Board
         {
             position = pos;
             buildingType = type;
-
-            Show();
         }
 
         public void Show()

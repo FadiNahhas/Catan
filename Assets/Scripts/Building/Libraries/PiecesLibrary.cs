@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using Board;
+using Building.Pieces;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Building.Libraries
 {
     [CreateAssetMenu(menuName = "Catan/New BuildingType Library", fileName = "BuildingLibrary")]
-    public class PiecesLibraryLibrary : SerializedScriptableObject
+    public class PiecesLibrary : SerializedScriptableObject
     {
-        public Dictionary<BuildingType, GameObject> Prefabs = new();
+        public Dictionary<BuildingType, Piece> Prefabs = new();
         
-        public GameObject GetPrefab(BuildingType type)
+        public Piece GetPrefab(BuildingType type)
         {
             if (!Prefabs.TryGetValue(type, out var prefab))
             {

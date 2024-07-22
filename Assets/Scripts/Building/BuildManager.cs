@@ -11,11 +11,8 @@ namespace Building
 {
     public class BuildManager : Singleton<BuildManager>
     {
-        [TabGroup("Prefabs")] public Piece settlementPrefab;
-        [TabGroup("Prefabs")] public Piece roadPrefab;
-        [TabGroup("Prefabs")] public Piece cityPrefab;
-        
         [TabGroup("Prefabs"), SerializeField] public TilePropsLibrary tilePropsLibrary;
+        [TabGroup("Prefabs"), SerializeField] public PiecesLibrary piecesLibrary;
         
         [TabGroup("Colors")][SerializeField] private List<Color> playerColors;
         
@@ -24,7 +21,7 @@ namespace Building
         public Piece Build(BuildingType type, Vector3 pos)
         {
             pos.y = HexGrid.HexThickness;
-            var piece = Instantiate(GetPrefab(type), pos, Quaternion.identity);
+            var piece = Instantiate(piecesLibrary.GetPrefab(type), pos, Quaternion.identity);
             piece.Initialize(currentPlayer);
             return piece;
         }
@@ -32,26 +29,11 @@ namespace Building
         public Piece Build(BuildingType type, Vector3 pos, Quaternion rotation)
         {
             pos.y = HexGrid.HexThickness;
-            var piece = Instantiate(GetPrefab(type), pos, rotation);
+            var piece = Instantiate(piecesLibrary.GetPrefab(type), pos, rotation);
             piece.Initialize(currentPlayer);
             return piece;
         }
-    
-        private Piece GetPrefab(BuildingType type)
-        {
-            switch (type)
-            {
-                case BuildingType.Settlement:
-                    return settlementPrefab;
-                case BuildingType.City:
-                    return cityPrefab;
-                case BuildingType.Road:
-                    return roadPrefab;
-                default:
-                    return null;
-            }
-        }
-
+        
         public Color GetPlayerColor(int player)
         {
             if (player < 0 || player >= playerColors.Count) return Color.white;

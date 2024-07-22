@@ -29,7 +29,7 @@ namespace Hex
         {
             if (!BuildPoint) return;
 
-            if (IsInPlayableArea && value)
+            if (IsInPlayableArea && value && CanBuild())
                 BuildPoint.Show();
             else
                 BuildPoint.Hide();
@@ -58,5 +58,7 @@ namespace Hex
         }
 
         public abstract void Update();
+        
+        public abstract bool CanBuild();
     }
 }

@@ -13,8 +13,6 @@ namespace Hex
         
         public Vector3 Position1 => Corner1.Position;
         public Vector3 Position2 => Corner2.Position;
-
-        public bool CanBuild => !BuildPoint.IsBuilt;
         
         public List<HexVertex> Neighbors { get; private set; }
         
@@ -27,7 +25,7 @@ namespace Hex
         
         public override void Update()
         {
-            if (!CanBuild)
+            if (!CanBuild())
                 ToggleBuildPointVisibility(false);
         }
         
@@ -35,6 +33,11 @@ namespace Hex
         {
             base.OnBuild();
             Update();
+        }
+
+        public override bool CanBuild()
+        {
+            return !BuildPoint.IsBuilt;
         }
     }
 }
