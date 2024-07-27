@@ -13,6 +13,7 @@ namespace Dice
         public int Result => result;
         
         public event Action OnDiceSettled;
+        public event Action OnResultDetected;
 
         private void Awake()
         {
@@ -25,7 +26,6 @@ namespace Dice
             
             if (IsSettled())
             {
-                DetectResult();
                 OnDiceSettled?.Invoke();
             }
         }
@@ -46,7 +46,7 @@ namespace Dice
             return RigidBody.IsSleeping();
         }
 
-        private void DetectResult()
+        public void DetectResult()
         {
             float maxDot = -1;
             Vector3 up = Vector3.up;
@@ -62,6 +62,8 @@ namespace Dice
                     result = face.GetComponent<Face>().FaceValue;
                 }
             }
+            
+            OnResultDetected?.Invoke();
         }
     }
 }

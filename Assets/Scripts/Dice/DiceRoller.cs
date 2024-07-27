@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
 using DG.Tweening;
+using Event_Bus;
 using Sirenix.OdinInspector;
+using Space_Station_Tycoon.Scripts.Event_System;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -19,6 +22,8 @@ namespace Dice
         private Dice[] _dice;
         [field: SerializeField, ReadOnly] public bool IsRolling { get; private set; }
 
+        private int _resultsCounted;
+        
         private void Start()
         {
             InitializeDice();
@@ -32,6 +37,7 @@ namespace Dice
             {
                 _dice[i] = Instantiate(dicePrefab, spawnPosition + (i * Vector3.right), quaternion.identity);
                 _dice[i].OnDiceSettled += OnDiceSettled;
+                _dice[i].OnResultDetected += OnResultDetected;
             }
         }
 
@@ -40,6 +46,7 @@ namespace Dice
             foreach (var die in _dice)
             {
                 die.OnDiceSettled -= OnDiceSettled;
+                die.OnResultDetected -= OnResultDetected;
             }
         }
 
@@ -47,6 +54,7 @@ namespace Dice
         {
             if (!_dice.All(d => d.IsSettled())) return;
             IsRolling = false;
+            
             ReturnDice();
         }
 
@@ -54,8 +62,17 @@ namespace Dice
         {
             for (var i = 0; i < diceCount; i++)
             {
-                _dice[i].transform.DOMove(spawnPosition + (i * Vector3.right), 1f).SetEase(Ease.InOutCubic);
+                _dice[i].transform.DOMove(spawnPosition + (i * Vector3.right), 1f).SetEase(Ease.InOutCubic).OnComplete(_dice[i].DetectResult);
             }
+        }
+
+        private void OnResultDetected()
+        {
+            _resultsCounted++;
+
+            if (_resultsCounted != diceCount) return;
+            _resultsCounted = 0;
+            EventBus<DiceRolledEvent>.Raise(new DiceRolledEvent(_dice.Sum(d => d.Result)));
         }
 
         [Button]
