@@ -139,6 +139,7 @@ namespace Hex
             _isGeneratingBoard = false;
         }
 
+        
         /// <summary>
         ///     Generates a shuffled list of resources and assigns them to the tiles
         /// </summary>

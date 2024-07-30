@@ -6,50 +6,40 @@ namespace Helpers
 {
     public static class MaterialHelper
     {
-        private static readonly Material DefaultMaterial;
-        
-        private static readonly Dictionary<Color, Material> Materials = new();
+        private static readonly Dictionary<Color, MaterialPropertyBlock> MaterialPropertyBlocks = new();
         private static readonly int ResourceColor = Shader.PropertyToID("_ResourceColor");
-
-        static MaterialHelper()
-        {
-            DefaultMaterial = Resources.Load<Material>("Materials/m_Tile");
-        }
-
-        public static Material GetDefaultMaterial() => GetMaterial(null);
+        private static readonly int BlendRadius = Shader.PropertyToID("_BlendRadius");
         
-        public static Material GetMaterial(CellType? type)
+        public static MaterialPropertyBlock GetMaterialProperties(CellType? type)
         {
+            MaterialPropertyBlock mpb;
             if (type == null)
             {
-                var mat = new Material(Shader.Find("Universal Render Pipeline/Lit"))
-                {
-                    color = Color.white
-                };
-                return mat;
+                mpb = new MaterialPropertyBlock();
+                mpb.SetColor(ResourceColor, Color.white);
+                return mpb;
             }
             
             var color = HexHelper.GetColor(type.Value);
             
-            if (Materials.TryGetValue(color, out var material))
-                return material;
+            if (MaterialPropertyBlocks.TryGetValue(color, out mpb))
+                return mpb;
 
             if (type == CellType.Water)
             {
-                var mat = new Material(Shader.Find("Universal Render Pipeline/Lit"))
-                {
-                    color = color
-                };
-                Materials.Add(color, mat);
+                var mat = new MaterialPropertyBlock();
+                mat.SetColor(ResourceColor, color);
+                mat.SetFloat(BlendRadius, 0f);
+                MaterialPropertyBlocks.Add(color, mat);
                 return mat;
             }
             
             // Duplicate the default material and set the color
-            material = new Material(DefaultMaterial);
-            material.SetColor(ResourceColor, color);
+            mpb = new MaterialPropertyBlock();
+            mpb.SetColor(ResourceColor, color);
             
-            Materials.Add(color, material);
-            return material;
+            MaterialPropertyBlocks.Add(color, mpb);
+            return mpb;
         }
     }
 }

@@ -112,7 +112,7 @@ Material:
     - _Mode: 0
     - _NearCameraSmoosh: 0.5
     - _NoisePower: 4
-    - _NumberOfStacks: 6
+    - _NumberOfStacks: 4
     - _OcclusionStrength: 1
     - _OffsetValue: 1
     - _Parallax: 0.02

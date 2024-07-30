@@ -65,6 +65,7 @@ namespace Board
 
         public void Show()
         {
+            meshRenderer.enabled = true;
             transform.DOScale(TargetScale, ScaleDuration).SetEase(ScaleEase);
             buttonCollider.enabled = true;
             IsVisible = true;
@@ -72,7 +73,8 @@ namespace Board
 
         public void Hide()
         {
-            transform.DOScale(Vector3.zero, ScaleDuration).SetEase(ScaleEase); 
+            transform.DOScale(Vector3.zero, ScaleDuration).SetEase(ScaleEase)
+                .OnComplete(() => meshRenderer.enabled = false); 
             buttonCollider.enabled = false;
             IsVisible = false;
         }

@@ -7,6 +7,7 @@ using Hex;
 using Interactions;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Board
 {
@@ -61,11 +62,11 @@ namespace Board
         {
             Debug.Log($"Setting type of {name} to {type}");
             cellType = type;
-
-            var materials = meshRenderer.materials;
-            materials[1] = MaterialHelper.GetMaterial(type);
             
-            meshRenderer.materials = materials;
+            meshRenderer.SetPropertyBlock(MaterialHelper.GetMaterialProperties(type), 1);
+
+            if (type == CellType.Water) return;
+            meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
         }
 
         /// <summary>
