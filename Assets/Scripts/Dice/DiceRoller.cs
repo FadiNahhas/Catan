@@ -75,7 +75,7 @@ namespace Dice
             EventBus<DiceRolledEvent>.Raise(new DiceRolledEvent(_dice.Sum(d => d.Result)));
         }
 
-        [Button]
+        [Button(ButtonSizes.Large)]
         void RollDice()
         {
             IsRolling = true;

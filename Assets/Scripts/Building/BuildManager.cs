@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Board;
 using Building.Libraries;
 using Building.Pieces;
+using Event_Bus;
 using Helpers;
 using Hex;
 using Sirenix.OdinInspector;
@@ -23,6 +24,7 @@ namespace Building
             pos.y = HexGrid.HexThickness;
             var piece = Instantiate(piecesLibrary.GetPrefab(type), pos, Quaternion.identity);
             piece.Initialize(currentPlayer);
+            var e = new BuildEvent(type, currentPlayer);
             return piece;
         }
         
@@ -31,6 +33,7 @@ namespace Building
             pos.y = HexGrid.HexThickness;
             var piece = Instantiate(piecesLibrary.GetPrefab(type), pos, rotation);
             piece.Initialize(currentPlayer);
+            var e = new BuildEvent(type, currentPlayer);
             return piece;
         }
         
