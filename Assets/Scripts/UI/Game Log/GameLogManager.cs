@@ -7,6 +7,7 @@ namespace UI.Game_Log
     public class GameLogManager : MonoBehaviour
     {
         [SerializeField] private GameLogText textPrefab;
+        [SerializeField] private GameObject dividerPrefab;
         EventBinding<GameLogEvent> _gameLogEvent;
         
         private void OnEnable()
@@ -24,6 +25,19 @@ namespace UI.Game_Log
         {
             GameLogText text = Instantiate(textPrefab, transform);
             text.Init(e.Message);
+        }
+        
+        private void AddDivider()
+        {
+            Instantiate(dividerPrefab, transform);
+        }
+        
+        public void ClearLog()
+        {
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
 }

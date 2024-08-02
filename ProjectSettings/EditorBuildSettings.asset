@@ -6,6 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 426d9ed5dc3988e4fbef844cbf75874b
+  - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  m_configObjects: {}
+  m_configObjects:
+    io.coherence.simulator.build.options: {fileID: 11400000, guid: 46e9ec7c005d34445a2301cdffd23a02,
+      type: 2}
