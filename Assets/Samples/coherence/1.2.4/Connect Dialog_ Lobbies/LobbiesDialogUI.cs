@@ -27,7 +27,8 @@ namespace Coherence.Samples.LobbiesDialog
         public Text joinLobbyTitleText;
         public ConnectDialogLobbyView templateLobbyView;
         public InputField lobbyNameInputField;
-        public InputField lobbyLimitInputField;
+        public Slider lobbyLimitSlider;
+        public Text lobbyLimitText;
         public Dropdown regionDropdown;
         public Button refreshRegionsButton;
         public Button refreshLobbiesButton;
@@ -41,10 +42,6 @@ namespace Coherence.Samples.LobbiesDialog
         public Text popupTitleText;
         public Button popupDismissButton;
         public InputField nameText;
-        public GameObject matchmakingRegionsContainer;
-        public Toggle matchmakingRegionsTemplate;
-        public Text matchmakingTag;
-        public Button matchmakingButton;
         public GameObject matchmakingCreateRegionsContainer;
         public Toggle matchmakingCreateRegionsTemplate;
         public ToggleGroup matchmakingCreateRegionToggleGroup;
@@ -52,7 +49,7 @@ namespace Coherence.Samples.LobbiesDialog
 
         private CloudService cloudService;
 
-        private int UserLobbyLimit => int.TryParse(lobbyLimitInputField.text, out var limit) ? limit : 10;
+        private int UserLobbyLimit => (int)lobbyLimitSlider.value;
 
         private string initialJoinLobbyTitle;
         private ListView lobbiesListView;
@@ -137,19 +134,18 @@ namespace Coherence.Samples.LobbiesDialog
 
         void Start()
         {
-            matchmakingRegionsTemplate.gameObject.SetActive(false);
             matchmakingCreateRegionsTemplate.gameObject.SetActive(false);
             nameText.text = Environment.UserName;
             joinLobbyButton.onClick.AddListener(() => JoinLobby(lobbiesListView.Selection.LobbyData));
             showCreateLobbyPanelButton.onClick.AddListener(ShowCreateRoomPanel);
             hideCreateLobbyPanelButton.onClick.AddListener(HideCreateRoomPanel);
+            lobbyLimitSlider.onValueChanged.AddListener(_ => UpdateLobbyLimitText());
             createAndJoinLobbyButton.onClick.AddListener(CreateLobbyAndJoin);
             regionDropdown.onValueChanged.AddListener(OnRegionChanged);
             refreshRegionsButton.onClick.AddListener(RefreshRegions);
             refreshLobbiesButton.onClick.AddListener(RefreshLobbies);
             disconnectButton.onClick.AddListener(bridge.Disconnect);
             popupDismissButton.onClick.AddListener(HideError);
-            matchmakingButton.onClick.AddListener(MatchmakingLobby);
 
             popupDialog.SetActive(false);
             noLobbiesAvailable.SetActive(false);
@@ -252,46 +248,7 @@ namespace Coherence.Samples.LobbiesDialog
         {
             cloudService.Rooms.RefreshRegions(OnRegionsChanged);
         }
-
-        private void MatchmakingLobby()
-        {
-            ShowLoadingState();
-
-            var regions = new List<string>();
-
-            foreach (var regionToggle in instantiatedRegionToggles)
-            {
-                if (regionToggle.isOn)
-                {
-                    regions.Add(regionToggle.GetComponentInChildren<Text>().text.ToLowerInvariant());
-                }
-            }
-
-            LobbyFilter filter = new LobbyFilter()
-                .WithAnd()
-                .WithRegion(FilterOperator.Any, regions)
-                .WithTag(FilterOperator.Any, new List<string>() { matchmakingTag.text });
-
-            var findOptions = new FindLobbyOptions()
-            {
-                LobbyFilters = new List<LobbyFilter>() { filter }
-            };
-
-            var playerNameAttribute = GetPlayerNameAttribute();
-            var region = matchmakingCreateRegionToggleGroup.GetFirstActiveToggle().GetComponentInChildren<Text>().text.ToLowerInvariant();
-
-            var createOptions = new CreateLobbyOptions()
-            {
-                Tag = matchmakingTag.text,
-                Region = region,
-                MaxPlayers = UserLobbyLimit,
-                PlayerAttributes = playerNameAttribute
-            };
-
-            cloudService.Rooms.LobbyService.FindOrCreateLobby(findOptions, createOptions, OnJoinedLobby);
-            HideCreateRoomPanel();
-        }
-
+        
         #endregion
 
         #region Request Callbacks
@@ -447,7 +404,6 @@ namespace Coherence.Samples.LobbiesDialog
         {
             createRoomPanel.SetActive(true);
 
-            InstantiateRegionToggles(instantiatedRegionToggles, matchmakingRegionsTemplate, matchmakingRegionsContainer.transform);
             InstantiateRegionToggles(instantiatedCreateRegionToggles, matchmakingCreateRegionsTemplate, matchmakingCreateRegionsContainer.transform);
         }
 
@@ -499,6 +455,11 @@ namespace Coherence.Samples.LobbiesDialog
             loadingSpinner.SetActive(true);
             showCreateLobbyPanelButton.interactable = false;
             joinLobbyButton.interactable = false;
+        }
+        
+        private void UpdateLobbyLimitText()
+        {
+            lobbyLimitText.text = UserLobbyLimit.ToString();
         }
 
         private void OnRegionChanged(int region)
