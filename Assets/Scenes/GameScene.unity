@@ -3041,7 +3041,7 @@ MonoBehaviour:
   ClientConnectionEntry: {fileID: 0}
   SimulatorConnectionEntry: {fileID: 0}
   mainBridge: 0
-  useBuildIndexAsId: 0
+  useBuildIndexAsId: 1
   sceneIdentifier: 0
   onNetworkEntityCreated:
     m_PersistentCalls:

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Coherence.Cloud;
 using Coherence.Samples.LobbiesDialog;
+using Coherence.Toolkit;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -90,8 +92,11 @@ public class LobbySessionUI : MonoBehaviour
     private void OnGameSessionStarted(RequestResponse<bool> response)
     {
         HideLoadingState();
+        
+        StartCoroutine(CoherenceSceneManager.LoadScene(FindObjectOfType<CoherenceBridge>(), 1));
 
         AssertRequestResponse("Error while starting game session", response.Status, response.Exception);
+
     }
 
     private void RefreshViews()
@@ -133,7 +138,7 @@ public class LobbySessionUI : MonoBehaviour
 
         AssertRequestResponse("Error while leaving lobby", response.Status, response.Exception);
     }
-
+    
     private void OnLobbyDispose()
     {
         lobbiesListObject.SetActive(true);
