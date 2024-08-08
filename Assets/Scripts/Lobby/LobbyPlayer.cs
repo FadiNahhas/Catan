@@ -33,6 +33,14 @@ namespace Lobby
         {
             player = _player;
             SetPlayerName(_player.playerName);
+
+            if (_player.isHost.Value)
+            {
+                SetReadyStatus(ReadyStatus.Host);
+                return;
+            }
+            
+            SetReadyStatus(_player.isReady.Value ?  ReadyStatus.Ready : ReadyStatus.NotReady);
         }
 
         public void SetReadyStatus(ReadyStatus _status)

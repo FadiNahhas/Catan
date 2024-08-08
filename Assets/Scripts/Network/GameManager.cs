@@ -37,6 +37,12 @@ namespace Network
             Players.Remove(_player);
         }
         
+        public void SetReadyStatus(GamePlayer _player, bool _ready)
+        {
+            if(!IsServerInitialized) return;
+            _player.isReady.Value = _ready;
+        }
+        
         private void OnPlayerListChanged(SyncListOperation _op, int _index, GamePlayer _oldItem, GamePlayer _newItem, bool _asServer)
         {
             Debug.Log($"SyncList Changed: Operation: {_op}, Index: {_index}, OldItem: {_oldItem}, NewItem: {_newItem}, AsServer: {_asServer}");
@@ -45,9 +51,11 @@ namespace Network
             {
                 case SyncListOperation.Add:
                 case SyncListOperation.Insert:
-                case SyncListOperation.RemoveAt:
                 case SyncListOperation.Clear:
                     UpdateLobbyUI();
+                    break;
+                case SyncListOperation.RemoveAt:
+                    RemovePlayerFromLobby(_oldItem);
                     break;
                 case SyncListOperation.Set:
                     break;
@@ -65,6 +73,11 @@ namespace Network
             {
                 GameLobby.Instance.AddPlayer(player);
             }
+        }
+        
+        private void RemovePlayerFromLobby(GamePlayer _player)
+        {
+            GameLobby.Instance.RemovePlayer(_player);
         }
     }
 }

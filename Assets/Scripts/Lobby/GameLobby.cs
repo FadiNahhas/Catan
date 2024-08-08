@@ -55,5 +55,24 @@ namespace Lobby
             }
             players.Clear();
         }
+
+        public void UpdateLobbyButtons(GamePlayer _localPlayer)
+        {
+            if (_localPlayer.isHost.Value)
+            {
+                startButton.gameObject.SetActive(true);
+                readyButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                startButton.gameObject.SetActive(false);
+                readyButton.gameObject.SetActive(true);
+            }
+        }
+        
+        public LobbyPlayer GetPlayer(GamePlayer _player)
+        {
+            return players.Find(_p => _p.Player == _player);
+        }
     }
 }
