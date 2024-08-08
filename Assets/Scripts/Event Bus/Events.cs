@@ -1,5 +1,6 @@
 ﻿using Board;
 using Building;
+using Network;
 using Space_Station_Tycoon.Scripts.Event_System;
 
 namespace Event_Bus
