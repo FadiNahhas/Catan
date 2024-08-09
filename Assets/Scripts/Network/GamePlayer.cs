@@ -14,8 +14,8 @@ namespace Network
         [TabGroup("Data")] public int index;
         [TabGroup("Data")] public string playerName = "testPlayer";
         
-        [TabGroup("State")][AllowMutableSyncType] public readonly SyncVar<bool> isHost = new();
-        [TabGroup("State")][AllowMutableSyncType] public readonly SyncVar<bool> isReady = new();
+        [TabGroup("State")][AllowMutableSyncType] public readonly SyncVar<bool> IsHostPlayer = new();
+        [TabGroup("State")][AllowMutableSyncType] public readonly SyncVar<bool> IsReady = new();
         [TabGroup("State")] public bool host;
         [TabGroup("State")] public bool ready;
 
@@ -28,27 +28,27 @@ namespace Network
                 LocalPlayer = this;
                 if (IsHostInitialized)
                 {
-                    isHost.Value = true;
+                    IsHostPlayer.Value = true;
                 }
                 LocalManager.Instance.ShowLobby(); // Show lobby for the player who owns this object
                 LocalManager.Instance.UpdateLobbyUI(this);
                 RequestAddToLobby();
             }
-            isHost.OnChange += OnHostChanged;
-            isReady.OnChange += OnReadyChanged;
+            IsHostPlayer.OnChange += OnHostPlayerChanged;
+            IsReady.OnChange += OnReadyChanged;
         }
         
-        private void OnReadyChanged(bool _prev, bool _next, bool _asserver)
+        private void OnReadyChanged(bool prev, bool next, bool asserver)
         {
-            Debug.Log($"Ready status changed: {_prev} -> {_next}");
-            ready = _next;
+            Debug.Log($"Ready status changed: {prev} -> {next}");
+            ready = next;
             var lobbyPlayer = GameLobby.Instance.GetPlayer(this);
-            lobbyPlayer.SetReadyStatus(_next ? ReadyStatus.Ready : ReadyStatus.NotReady);
+            lobbyPlayer.SetReadyStatus(next ? ReadyStatus.Ready : ReadyStatus.NotReady);
         }
 
-        private void OnHostChanged(bool _prev, bool _next, bool _asServer)
+        private void OnHostPlayerChanged(bool prev, bool next, bool as_server)
         {
-            host = _next;
+            host = next;
         }
 
         public override void OnStopClient()
@@ -61,8 +61,8 @@ namespace Network
                 GameLobby.Instance.ClearLobby();
                 LocalManager.Instance.HideLobby();
             }
-            isHost.OnChange -= OnHostChanged;
-            isReady.OnChange -= OnReadyChanged;
+            IsHostPlayer.OnChange -= OnHostPlayerChanged;
+            IsReady.OnChange -= OnReadyChanged;
         }
 
         public override void OnStopServer()
@@ -75,12 +75,12 @@ namespace Network
         
         private void RequestRemoveFromLobby() => RemoveFromLobby();
         
-        public void RequestReadyStatusChange(bool _value) => ChangeReadyStatusServerRpc(_value);
+        public void RequestReadyStatusChange(bool value) => ChangeReadyStatusServerRpc(value);
 
         [ServerRpc]
-        private void ChangeReadyStatusServerRpc(bool _value)
+        private void ChangeReadyStatusServerRpc(bool value)
         {
-            FindObjectOfType<GameManager>().SetReadyStatus(this, _value);
+            FindObjectOfType<GameManager>().SetReadyStatus(this, value);
         }
 
         [ServerRpc]

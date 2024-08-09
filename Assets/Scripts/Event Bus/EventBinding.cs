@@ -26,13 +26,13 @@ namespace Space_Station_Tycoon.Scripts.Event_System
             set => onEventNoArgs = value;
         }
 
-        public EventBinding(Action<T> onEvent) => this.onEvent = onEvent;
-        public EventBinding(Action onEventNoArgs) => this.onEventNoArgs = onEventNoArgs;
+        public EventBinding(Action<T> on_event) => this.onEvent = on_event;
+        public EventBinding(Action on_event_no_args) => this.onEventNoArgs = on_event_no_args;
         
-        public void Add(Action onEvent) => onEventNoArgs += onEvent;
-        public void Add(Action<T> onEvent) => this.onEvent += onEvent;
+        public void Add(Action on_event) => onEventNoArgs += on_event;
+        public void Add(Action<T> on_event) => this.onEvent += on_event;
         
-        public void Remove(Action onEvent) => onEventNoArgs -= onEvent;
-        public void Remove(Action<T> onEvent) => this.onEvent -= onEvent;
+        public void Remove(Action on_event) => onEventNoArgs -= on_event;
+        public void Remove(Action<T> on_event) => this.onEvent -= on_event;
     }
 }

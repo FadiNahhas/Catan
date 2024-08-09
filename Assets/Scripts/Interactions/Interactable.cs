@@ -10,15 +10,15 @@ namespace Interactions
         [TabGroup("Materials")][SerializeField] protected Material hoverMaterial;
         [TabGroup("Components"), SerializeField, ReadOnly] protected MeshRenderer meshRenderer;
         
-        private bool _isHovered;
+        private bool isHovered;
         
         public bool IsHovered
         {
-            get => _isHovered;
+            get => isHovered;
             private set
             {
-                if (_isHovered == value) return;
-                _isHovered = value;
+                if (isHovered == value) return;
+                isHovered = value;
                 OnHoverUpdated();
             }
         }
@@ -30,17 +30,17 @@ namespace Interactions
 
         public abstract void Interact();
         
-        public virtual void OnPointerEnter(PointerEventData eventData)
+        public virtual void OnPointerEnter(PointerEventData event_data)
         {
             IsHovered = true;
         }
 
-        public virtual void OnPointerExit(PointerEventData eventData)
+        public virtual void OnPointerExit(PointerEventData event_data)
         {
             IsHovered = false;
         }
 
-        public virtual void OnPointerClick(PointerEventData eventData)
+        public virtual void OnPointerClick(PointerEventData event_data)
         {
             if (!IsHovered) return;
             

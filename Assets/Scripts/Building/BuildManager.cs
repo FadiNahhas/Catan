@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using Board;
-using Building.Libraries;
-using Building.Pieces;
+using Board.Generation;
+using Board.Pieces;
 using Event_Bus;
 using Helpers;
-using Hex;
+using Board.Pieces.Libraries;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -14,14 +13,14 @@ namespace Building
     {
         [TabGroup("Prefabs"), SerializeField] public TilePropsLibrary tilePropsLibrary;
         [TabGroup("Prefabs"), SerializeField] public PiecesLibrary piecesLibrary;
-        
-        [TabGroup("Colors")][SerializeField] private List<Color> playerColors;
-        
-        public int currentPlayer = 0;
+        [TabGroup("Libraries"), SerializeField] public PlayerColors playerColors;
+        [TabGroup("State")] public int currentPlayer = 0;
 
+        #region Build Methods
+        
         public Piece Build(BuildingType type, Vector3 pos)
         {
-            pos.y = HexGrid.HexThickness;
+            pos.y = BoardGenerator.HexThickness;
             var piece = Instantiate(piecesLibrary.GetPrefab(type), pos, Quaternion.identity);
             piece.Initialize(currentPlayer);
             var e = new BuildEvent(type, currentPlayer);
@@ -30,18 +29,16 @@ namespace Building
         
         public Piece Build(BuildingType type, Vector3 pos, Quaternion rotation)
         {
-            pos.y = HexGrid.HexThickness;
+            pos.y = BoardGenerator.HexThickness;
             var piece = Instantiate(piecesLibrary.GetPrefab(type), pos, rotation);
             piece.Initialize(currentPlayer);
             var e = new BuildEvent(type, currentPlayer);
             return piece;
         }
         
-        public Color GetPlayerColor(int player)
-        {
-            if (player < 0 || player >= playerColors.Count) return Color.white;
-            return playerColors[player];
-        }
+        #endregion
+
+        public Color GetPlayerColor(int player) => playerColors.GetColor(player);
 
         public GameObject SpawnProps(Tile tile)
         {

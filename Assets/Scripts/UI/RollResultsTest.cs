@@ -8,17 +8,17 @@ namespace UI
     public class RollResultsTest : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI resultText;
-        EventBinding<DiceRolledEvent> _diceRolledEventBinding;
+        EventBinding<DiceRolledEvent> diceRolledEventBinding;
 
         private void OnEnable()
         {
-            _diceRolledEventBinding = new EventBinding<DiceRolledEvent>(UpdateResult);
-            EventBus<DiceRolledEvent>.Register(_diceRolledEventBinding);
+            diceRolledEventBinding = new EventBinding<DiceRolledEvent>(UpdateResult);
+            EventBus<DiceRolledEvent>.Register(diceRolledEventBinding);
         }
 
         private void OnDisable()
         {
-            EventBus<DiceRolledEvent>.Deregister(_diceRolledEventBinding);
+            EventBus<DiceRolledEvent>.Deregister(diceRolledEventBinding);
         }
 
         private void UpdateResult(DiceRolledEvent e)

@@ -20,7 +20,7 @@ namespace Dependency_Injection
     {
         private const BindingFlags BindingFlags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public;
 
-        private readonly Dictionary<Type, object> _registry = new();
+        private readonly Dictionary<Type, object> registry = new();
 
         protected override void Awake()
         {
@@ -63,7 +63,7 @@ namespace Dependency_Injection
                 var providedInstance = method.Invoke(provider, null);
                 if (providedInstance != null)
                 {
-                    _registry.Add(returnType, providedInstance);
+                    registry.Add(returnType, providedInstance);
                 }
                 else
                 {
@@ -100,7 +100,7 @@ namespace Dependency_Injection
         /// <returns>The resolved instance.</returns>
         public object Resolve(Type type)
         {
-            _registry.TryGetValue(type, out var resolvedInstance);
+            registry.TryGetValue(type, out var resolvedInstance);
             return resolvedInstance;
         }
 
@@ -138,7 +138,7 @@ namespace Dependency_Injection
                     .ToArray();
                 
                 var resolvedInstances = requiredParameters.Select(Resolve).ToArray();
-                if (resolvedInstances.Any(resolvedInstance => resolvedInstance == null))
+                if (resolvedInstances.Any(resolved_instance => resolved_instance == null))
                 {
                     throw new Exception($"Failed to inject dependencies for method '{injectableMethod.Name}' in class '{type.Name}'.");
                 }

@@ -8,17 +8,17 @@ namespace UI.Game_Log
     {
         [SerializeField] private GameLogText textPrefab;
         [SerializeField] private GameObject dividerPrefab;
-        EventBinding<GameLogEvent> _gameLogEvent;
+        EventBinding<GameLogEvent> gameLogEvent;
         
         private void OnEnable()
         {
-            _gameLogEvent = new EventBinding<GameLogEvent>(AddMessage);
-            EventBus<GameLogEvent>.Register(_gameLogEvent);
+            gameLogEvent = new EventBinding<GameLogEvent>(AddMessage);
+            EventBus<GameLogEvent>.Register(gameLogEvent);
         }
 
         private void OnDisable()
         {
-            EventBus<GameLogEvent>.Deregister(_gameLogEvent);
+            EventBus<GameLogEvent>.Deregister(gameLogEvent);
         }
 
         private void AddMessage(GameLogEvent e)

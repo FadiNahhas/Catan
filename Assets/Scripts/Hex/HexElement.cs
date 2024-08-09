@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Board;
+using Board.Pieces;
 
 namespace Hex
 {
@@ -14,9 +15,9 @@ namespace Hex
         
         public List<Tile> AdjacentTiles { get; private set; } = new();
         
-        public virtual void AssignBuildPoint(BuildingPoint buildPoint)
+        public virtual void AssignBuildPoint(BuildingPoint build_point)
         {
-            BuildPoint = buildPoint;
+            BuildPoint = build_point;
             BuildPoint.OnBuild += OnBuild;
         }
 

@@ -25,29 +25,29 @@ namespace Network
             Players.OnChange -= OnPlayerListChanged;
         }
         
-        public void AddToLobby(GamePlayer _player)
+        public void AddToLobby(GamePlayer player)
         {
             if(!IsServerInitialized) return;
-            Players.Add(_player);
+            Players.Add(player);
         }
         
-        public void RemoveFromLobby(GamePlayer _player)
+        public void RemoveFromLobby(GamePlayer player)
         {
             if(!IsServerInitialized) return;
-            Players.Remove(_player);
+            Players.Remove(player);
         }
         
-        public void SetReadyStatus(GamePlayer _player, bool _ready)
+        public void SetReadyStatus(GamePlayer player, bool ready)
         {
             if(!IsServerInitialized) return;
-            _player.isReady.Value = _ready;
+            player.IsReady.Value = ready;
         }
         
-        private void OnPlayerListChanged(SyncListOperation _op, int _index, GamePlayer _oldItem, GamePlayer _newItem, bool _asServer)
+        private void OnPlayerListChanged(SyncListOperation op, int index, GamePlayer old_item, GamePlayer new_item, bool as_server)
         {
-            Debug.Log($"SyncList Changed: Operation: {_op}, Index: {_index}, OldItem: {_oldItem}, NewItem: {_newItem}, AsServer: {_asServer}");
+            Debug.Log($"SyncList Changed: Operation: {op}, Index: {index}, OldItem: {old_item}, NewItem: {new_item}, AsServer: {as_server}");
             if (!IsClientInitialized) return;
-            switch (_op)
+            switch (op)
             {
                 case SyncListOperation.Add:
                 case SyncListOperation.Insert:
@@ -55,14 +55,14 @@ namespace Network
                     UpdateLobbyUI();
                     break;
                 case SyncListOperation.RemoveAt:
-                    RemovePlayerFromLobby(_oldItem);
+                    RemovePlayerFromLobby(old_item);
                     break;
                 case SyncListOperation.Set:
                     break;
                 case SyncListOperation.Complete:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(_op), _op, null);
+                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
         }
         
@@ -75,9 +75,9 @@ namespace Network
             }
         }
         
-        private void RemovePlayerFromLobby(GamePlayer _player)
+        private void RemovePlayerFromLobby(GamePlayer player)
         {
-            GameLobby.Instance.RemovePlayer(_player);
+            GameLobby.Instance.RemovePlayer(player);
         }
     }
 }

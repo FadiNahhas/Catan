@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using Board;
+using Board.Generation;
+using Board.Pieces;
 using Hex;
 
 namespace Helpers
@@ -58,7 +60,7 @@ namespace Helpers
         {
             if (!tile.HasNumber) return false;
             
-            return tile.GetNumber() is HexGrid.ProblematicNumber1 or HexGrid.ProblematicNumber2;
+            return tile.GetNumber() is BoardGenerator.ProblematicNumber1 or BoardGenerator.ProblematicNumber2;
         }
         
         /// <summary>

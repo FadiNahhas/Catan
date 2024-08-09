@@ -29,34 +29,34 @@ namespace Lobby
             Debug.Log(_readyStatusColors);
         }
 
-        public void Init(GamePlayer _player)
+        public void Init(GamePlayer player)
         {
-            player = _player;
-            SetPlayerName(_player.playerName);
+            this.player = player;
+            SetPlayerName(player.playerName);
 
-            if (_player.isHost.Value)
+            if (player.IsHostPlayer.Value)
             {
                 SetReadyStatus(ReadyStatus.Host);
                 return;
             }
             
-            SetReadyStatus(_player.isReady.Value ?  ReadyStatus.Ready : ReadyStatus.NotReady);
+            SetReadyStatus(player.IsReady.Value ?  ReadyStatus.Ready : ReadyStatus.NotReady);
         }
 
-        public void SetReadyStatus(ReadyStatus _status)
+        public void SetReadyStatus(ReadyStatus status)
         {
-            status = _status;
+            this.status = status;
             RefreshVisuals();
         }
 
-        private void SetPlayerName(string _name)
+        private void SetPlayerName(string name)
         {
-            playerName.text = _name;
+            playerName.text = name;
         }
 
-        public void SetPlayerColor(Color _color)
+        public void SetPlayerColor(Color color)
         {
-            color = _color;
+            this.color = color;
             RefreshVisuals();
         }
 

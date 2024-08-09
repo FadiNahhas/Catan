@@ -14,8 +14,8 @@ namespace Event_Bus
             AssemblyCSharpFirstPass
         }
 
-        static AssemblyType? GetAssemblyType(string assemblyName) {
-            return assemblyName switch {
+        static AssemblyType? GetAssemblyType(string assembly_name) {
+            return assembly_name switch {
                 "Assembly-CSharp" => AssemblyType.AssemblyCSharp,
                 "Assembly-CSharp-Editor" => AssemblyType.AssemblyCSharpEditor,
                 "Assembly-CSharp-Editor-firstpass" => AssemblyType.AssemblyCSharpEditorFirstPass,
@@ -24,17 +24,17 @@ namespace Event_Bus
             };
         }
 
-        static void AddTypesFromAssembly(Type[] assemblyTypes, Type interfaceType, ICollection<Type> results) {
-            if (assemblyTypes == null) return;
-            for (int i = 0; i < assemblyTypes.Length; i++) {
-                Type type = assemblyTypes[i];
-                if (type != interfaceType && interfaceType.IsAssignableFrom(type)) {
+        static void AddTypesFromAssembly(Type[] assembly_types, Type interface_type, ICollection<Type> results) {
+            if (assembly_types == null) return;
+            for (int i = 0; i < assembly_types.Length; i++) {
+                Type type = assembly_types[i];
+                if (type != interface_type && interface_type.IsAssignableFrom(type)) {
                     results.Add(type);
                 }
             }
         }
         
-        public static List<Type> GetTypes(Type interfaceType) {
+        public static List<Type> GetTypes(Type interface_type) {
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
         
             Dictionary<AssemblyType, Type[]> assemblyTypes = new Dictionary<AssemblyType, Type[]>();
@@ -47,10 +47,10 @@ namespace Event_Bus
             }
         
             assemblyTypes.TryGetValue(AssemblyType.AssemblyCSharp, out var assemblyCSharpTypes);
-            AddTypesFromAssembly(assemblyCSharpTypes, interfaceType, types);
+            AddTypesFromAssembly(assemblyCSharpTypes, interface_type, types);
 
             assemblyTypes.TryGetValue(AssemblyType.AssemblyCSharpFirstPass, out var assemblyCSharpFirstPassTypes);
-            AddTypesFromAssembly(assemblyCSharpFirstPassTypes, interfaceType, types);
+            AddTypesFromAssembly(assemblyCSharpFirstPassTypes, interface_type, types);
         
             return types;
         }

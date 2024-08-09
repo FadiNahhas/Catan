@@ -9,9 +9,9 @@ namespace Lobby
     {
         [SerializeField] private List<Helpers.KeyValuePair<ReadyStatus, Color>> statusColors = new();
         
-        public Color GetColor(ReadyStatus _status)
+        public Color GetColor(ReadyStatus status)
         {
-            foreach (var pair in statusColors.Where(_pair => _pair.key == _status))
+            foreach (var pair in statusColors.Where(pair => pair.key == status))
             {
                 return pair.value;
             }

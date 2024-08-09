@@ -30,10 +30,10 @@ namespace Event_Bus
         
         public int PlayerID { get; }
         
-        public BuildEvent(BuildingType type, int playerID)
+        public BuildEvent(BuildingType type, int player_id)
         {
             Type = type;
-            PlayerID = playerID;
+            PlayerID = player_id;
             
             EventBus<GameLogEvent>.Raise(new GameLogEvent(ToString()));
         }

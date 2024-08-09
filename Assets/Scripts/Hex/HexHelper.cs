@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Board;
+using Board.Configuration;
 using UnityEngine;
 
 namespace Hex
@@ -76,24 +77,24 @@ namespace Hex
         /// <param name="r">The r coordinate of the hex cell</param>
         /// <param name="hexSize">The size of the hex cell</param>
         /// <returns>The world space position of the hex cell</returns>
-        public static Vector3 HexToPosition(int q, int r, float hexSize)
+        public static Vector3 HexToPosition(int q, int r, float hex_size)
         {
-            var x = hexSize * (Mathf.Sqrt(3f) * (r + q / 2f));
-            var z = hexSize * (3f / 2f * q);
+            var x = hex_size * (Mathf.Sqrt(3f) * (r + q / 2f));
+            var z = hex_size * (3f / 2f * q);
             
             return new Vector3(x, 0, z);
         }
         
-        public static void CreateVertices(HexTile hexTile, float hexSize, Dictionary<Vector3, HexVertex> vertices, Dictionary<Vector3, HexCorner> corners)
+        public static void CreateVertices(HexTile hex_tile, float hex_size, Dictionary<Vector3, HexVertex> vertices, Dictionary<Vector3, HexCorner> corners)
         {
-            hexTile.SetCorners(GetHexCorners(hexTile.Position, hexSize, corners));
+            hex_tile.SetCorners(GetHexCorners(hex_tile.Position, hex_size, corners));
 
-            for (var i = 0; i < hexTile.Corners.Length; i++)
+            for (var i = 0; i < hex_tile.Corners.Length; i++)
             {
-                var corner1 = hexTile.Corners[i];
-                var corner2 = hexTile.Corners[(i + 1) % NumCorners];
+                var corner1 = hex_tile.Corners[i];
+                var corner2 = hex_tile.Corners[(i + 1) % NumCorners];
                 var vertex = FindOrCreateVertex(corner1, corner2, vertices);
-                hexTile.Vertices.Add(vertex);
+                hex_tile.Vertices.Add(vertex);
                 var roundedPosition = new Vector3(Mathf.Round(corner1.Position.x * 1000) / 1000, 0,
                     Mathf.Round(corner1.Position.z * 1000) / 1000);
 
@@ -106,18 +107,18 @@ namespace Hex
             }
         }
         
-        public static HexCorner[] GetHexCorners(Vector3 center, float hexSize, Dictionary<Vector3, HexCorner> cornersDictionary)
+        public static HexCorner[] GetHexCorners(Vector3 center, float hex_size, Dictionary<Vector3, HexCorner> corners_dictionary)
         {
             var corners = new HexCorner[6];
             for (var i = 0; i < 6; i++)
             {
                 float angle = 60 * i - 30;
                 var angleRad = Mathf.Deg2Rad * angle;
-                var position = new Vector3(center.x + hexSize * Mathf.Cos(angleRad),
+                var position = new Vector3(center.x + hex_size * Mathf.Cos(angleRad),
                     0f,
-                    center.z + hexSize * Mathf.Sin(angleRad));
+                    center.z + hex_size * Mathf.Sin(angleRad));
 
-                corners[i] = FindOrCreateCorner(position, cornersDictionary);
+                corners[i] = FindOrCreateCorner(position, corners_dictionary);
             }
 
             return corners;
@@ -137,18 +138,18 @@ namespace Hex
             return corners[roundedPosition];
         }
 
-        private static HexVertex FindOrCreateVertex(HexCorner startCorner, HexCorner endCorner, Dictionary<Vector3, HexVertex> vertices)
+        private static HexVertex FindOrCreateVertex(HexCorner start_corner, HexCorner end_corner, Dictionary<Vector3, HexVertex> vertices)
         {
             
             // Round the sum of the x and z coordinates of the start and end corners to 3 decimal places
-            var uniqueVertexIdentifier = GetUniqueVertexIdentifier(startCorner.Position, endCorner.Position);
+            var uniqueVertexIdentifier = GetUniqueVertexIdentifier(start_corner.Position, end_corner.Position);
             
             if (vertices.TryGetValue(uniqueVertexIdentifier, out var foundVertex))
             {
                 return foundVertex;
             }
 
-            var vertex = new HexVertex(startCorner, endCorner);
+            var vertex = new HexVertex(start_corner, end_corner);
             vertices.Add(uniqueVertexIdentifier, vertex);
             
             return vertices[uniqueVertexIdentifier];

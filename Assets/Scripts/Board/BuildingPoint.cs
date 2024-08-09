@@ -1,6 +1,6 @@
 ﻿using System;
+using Board.Pieces;
 using Building;
-using Building.Pieces;
 using DG.Tweening;
 using Interactions;
 using Sirenix.OdinInspector;
@@ -50,7 +50,7 @@ namespace Board
             OnBuild?.Invoke();
         }
 
-        public override void OnPointerClick(PointerEventData eventData)
+        public override void OnPointerClick(PointerEventData event_data)
         {
             if (!IsHovered) return;
             

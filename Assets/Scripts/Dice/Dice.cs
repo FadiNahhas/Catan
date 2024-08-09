@@ -30,7 +30,7 @@ namespace Dice
             }
         }
         
-        public static void AssignRoller(DiceRoller diceRoller)
+        public static void AssignRoller(DiceRoller dice_roller)
         {
             if (_diceRoller != null)
             {
@@ -38,7 +38,7 @@ namespace Dice
                 return;
             }
             
-            _diceRoller = diceRoller;
+            _diceRoller = dice_roller;
         }
         
         public bool IsSettled()

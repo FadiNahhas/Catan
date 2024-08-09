@@ -20,23 +20,23 @@ namespace Lobby
 
         [TabGroup("State"), SerializeField] private List<LobbyPlayer> players = new();
         
-        public void SetLobbyName(string _name)
+        public void SetLobbyName(string lobby_name)
         {
-            lobbyName.text = _name;
+            lobbyName.text = lobby_name;
         }
         
-        public void AddPlayer(GamePlayer _player)
+        public void AddPlayer(GamePlayer player)
         {
-            var player = Instantiate(lobbyPlayerPrefab, playerContainer);
+            var p = Instantiate(lobbyPlayerPrefab, playerContainer);
             // Initialize player variables (host, name, color, etc.)
-            player.Init(_player);
-            players.Add(player);
+            p.Init(player);
+            players.Add(p);
         }
 
         // TODO: Add player class and implement function
-        public void RemovePlayer(GamePlayer _player)
+        public void RemovePlayer(GamePlayer player_to_remove)
         {
-            var player = players.Find(_p => _p.Player == _player);
+            var player = players.Find(p => p.Player == player_to_remove);
             
             if (player == null){
                 Debug.LogWarning("Couldn't find player!");   
@@ -56,9 +56,9 @@ namespace Lobby
             players.Clear();
         }
 
-        public void UpdateLobbyButtons(GamePlayer _localPlayer)
+        public void UpdateLobbyButtons(GamePlayer local_player)
         {
-            if (_localPlayer.isHost.Value)
+            if (local_player.IsHostPlayer.Value)
             {
                 startButton.gameObject.SetActive(true);
                 readyButton.gameObject.SetActive(false);
@@ -70,9 +70,9 @@ namespace Lobby
             }
         }
         
-        public LobbyPlayer GetPlayer(GamePlayer _player)
+        public LobbyPlayer GetPlayer(GamePlayer player)
         {
-            return players.Find(_p => _p.Player == _player);
+            return players.Find(p => p.Player == player);
         }
     }
 }

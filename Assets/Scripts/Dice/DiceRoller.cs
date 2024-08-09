@@ -19,10 +19,10 @@ namespace Dice
         [TabGroup("Configuration")] [SerializeField] private int diceCount = 2;
         [TabGroup("Configuration")] [SerializeField] private Vector3 spawnPosition;
         
-        private Dice[] _dice;
+        private Dice[] dice;
         [field: SerializeField, ReadOnly] public bool IsRolling { get; private set; }
 
-        private int _resultsCounted;
+        private int resultsCounted;
         
         private void Start()
         {
@@ -31,19 +31,19 @@ namespace Dice
 
         private void InitializeDice()
         {
-            _dice = new Dice[diceCount];
+            dice = new Dice[diceCount];
             Dice.AssignRoller(this);
             for (var i = 0; i < diceCount; i++)
             {
-                _dice[i] = Instantiate(dicePrefab, spawnPosition + (i * Vector3.right), quaternion.identity);
-                _dice[i].OnDiceSettled += OnDiceSettled;
-                _dice[i].OnResultDetected += OnResultDetected;
+                dice[i] = Instantiate(dicePrefab, spawnPosition + (i * Vector3.right), quaternion.identity);
+                dice[i].OnDiceSettled += OnDiceSettled;
+                dice[i].OnResultDetected += OnResultDetected;
             }
         }
 
         private void OnDisable()
         {
-            foreach (var die in _dice)
+            foreach (var die in dice)
             {
                 die.OnDiceSettled -= OnDiceSettled;
                 die.OnResultDetected -= OnResultDetected;
@@ -52,7 +52,7 @@ namespace Dice
 
         private void OnDiceSettled()
         {
-            if (!_dice.All(d => d.IsSettled())) return;
+            if (!dice.All(d => d.IsSettled())) return;
             IsRolling = false;
             
             ReturnDice();
@@ -62,24 +62,24 @@ namespace Dice
         {
             for (var i = 0; i < diceCount; i++)
             {
-                _dice[i].transform.DOMove(spawnPosition + (i * Vector3.right), 1f).SetEase(Ease.InOutCubic).OnComplete(_dice[i].DetectResult);
+                dice[i].transform.DOMove(spawnPosition + (i * Vector3.right), 1f).SetEase(Ease.InOutCubic).OnComplete(dice[i].DetectResult);
             }
         }
 
         private void OnResultDetected()
         {
-            _resultsCounted++;
+            resultsCounted++;
 
-            if (_resultsCounted != diceCount) return;
-            _resultsCounted = 0;
-            EventBus<DiceRolledEvent>.Raise(new DiceRolledEvent(_dice.Sum(d => d.Result)));
+            if (resultsCounted != diceCount) return;
+            resultsCounted = 0;
+            EventBus<DiceRolledEvent>.Raise(new DiceRolledEvent(dice.Sum(d => d.Result)));
         }
 
         [Button(ButtonSizes.Large)]
         void RollDice()
         {
             IsRolling = true;
-            foreach (var die in _dice)
+            foreach (var die in dice)
             {
                 var directionToCenter = (Vector3.zero - die.transform.position).normalized;
                 var force = directionToCenter * forceMagnitude;
