@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Board.Pieces.Libraries;
+using FishNet.Managing;
 using Helpers;
 using Network;
 using Sirenix.OdinInspector;
@@ -15,6 +17,7 @@ namespace Lobby
         [TabGroup("References"), SerializeField] private Button readyButton;
         [TabGroup("References"), SerializeField] private Button startButton;
         [TabGroup("References"), SerializeField] private Transform playerContainer;
+        [TabGroup("References"), SerializeField, Required] private PlayerColors playerColors;
         
         [TabGroup("Prefabs"), SerializeField] private LobbyPlayer lobbyPlayerPrefab;
 
@@ -29,7 +32,7 @@ namespace Lobby
         {
             var p = Instantiate(lobbyPlayerPrefab, playerContainer);
             // Initialize player variables (host, name, color, etc.)
-            p.Init(player);
+            p.Init(player, playerColors.GetColor(player.Index.Value));
             players.Add(p);
         }
 

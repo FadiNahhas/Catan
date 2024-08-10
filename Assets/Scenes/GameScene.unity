@@ -4780,6 +4780,7 @@ MonoBehaviour:
   readyButton: {fileID: 1401084174}
   startButton: {fileID: 447146657}
   playerContainer: {fileID: 1505409647}
+  playerColors: {fileID: 11400000, guid: 8b34758a72df36b449875965930e553e, type: 2}
   lobbyPlayerPrefab: {fileID: 9098038721856819616, guid: e3371ef13e4830143b1d3897124a56a6,
     type: 3}
   players: []

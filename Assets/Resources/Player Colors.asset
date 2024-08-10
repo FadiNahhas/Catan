@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Player Colors
   m_EditorClassIdentifier: 
   colors:
-  - {r: 0.16077948, g: 1, b: 0, a: 1}
+  - {r: 0.1440993, g: 0.8962264, b: 0, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 0, g: 0.0022234917, b: 1, a: 1}
   - {r: 1, g: 0.93929195, b: 0.8632076, a: 1}

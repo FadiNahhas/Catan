@@ -17,52 +17,48 @@ namespace Lobby
         [SerializeField] private TextMeshProUGUI playerName;
 
         [SerializeField] private ReadyStatus status;
-        [SerializeField] private Color color;
-
-        private GamePlayer player;
-        public GamePlayer Player => player;
+        public GamePlayer Player { get; private set; }
 
         private void Awake()
         {
             if (_readyStatusColors != null) return;
             _readyStatusColors = Resources.Load<ReadyStatusColors>("Ready Status Colors");
-            Debug.Log(_readyStatusColors);
         }
 
-        public void Init(GamePlayer player)
+        public void Init(GamePlayer player, Color player_color)
         {
-            this.player = player;
+            Player = player;
             SetPlayerName(player.playerName);
 
             if (player.IsHostPlayer.Value)
             {
                 SetReadyStatus(ReadyStatus.Host);
-                return;
             }
-            
-            SetReadyStatus(player.IsReady.Value ?  ReadyStatus.Ready : ReadyStatus.NotReady);
+            else
+            {
+                SetReadyStatus(player.IsReady.Value ?  ReadyStatus.Ready : ReadyStatus.NotReady);
+            }
+            SetPlayerColor(player_color);
         }
 
-        public void SetReadyStatus(ReadyStatus status)
+        public void SetReadyStatus(ReadyStatus new_status)
         {
-            this.status = status;
+            status = new_status;
             RefreshVisuals();
         }
 
-        private void SetPlayerName(string name)
+        private void SetPlayerName(string player_name)
         {
-            playerName.text = name;
+            playerName.text = player_name;
         }
 
-        public void SetPlayerColor(Color color)
+        public void SetPlayerColor(Color player_color)
         {
-            this.color = color;
-            RefreshVisuals();
+            avatar.color = player_color;
         }
 
         private void RefreshVisuals()
         {
-            avatar.color = color;
             readyStatus.DOColor(_readyStatusColors.GetColor(status), 0.75f);
         }
 

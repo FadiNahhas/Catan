@@ -10,12 +10,12 @@ namespace Network
     public class GamePlayer : NetworkBehaviour
     {
         public static GamePlayer LocalPlayer { get; private set; }
-        
-        [TabGroup("Data")] public int index;
+
+        [AllowMutableSyncType] public readonly SyncVar<int> Index = new();
         [TabGroup("Data")] public string playerName = "testPlayer";
         
-        [TabGroup("State")][AllowMutableSyncType] public readonly SyncVar<bool> IsHostPlayer = new();
-        [TabGroup("State")][AllowMutableSyncType] public readonly SyncVar<bool> IsReady = new();
+        [AllowMutableSyncType] public readonly SyncVar<bool> IsHostPlayer = new();
+        [AllowMutableSyncType] public readonly SyncVar<bool> IsReady = new();
         [TabGroup("State")] public bool host;
         [TabGroup("State")] public bool ready;
 
@@ -40,7 +40,6 @@ namespace Network
         
         private void OnReadyChanged(bool prev, bool next, bool asserver)
         {
-            Debug.Log($"Ready status changed: {prev} -> {next}");
             ready = next;
             var lobbyPlayer = GameLobby.Instance.GetPlayer(this);
             lobbyPlayer.SetReadyStatus(next ? ReadyStatus.Ready : ReadyStatus.NotReady);

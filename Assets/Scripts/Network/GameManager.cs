@@ -1,18 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using FishNet.CodeGenerating;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using Lobby;
-using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Network
 {
     public class GameManager : NetworkBehaviour
     {
         [AllowMutableSyncType] public readonly SyncList<GamePlayer> Players = new();
-        
+        [AllowMutableSyncType] public readonly SyncVar<int> NextID = new();
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            NextID.SetInitialValues(0);
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();
@@ -28,7 +32,9 @@ namespace Network
         public void AddToLobby(GamePlayer player)
         {
             if(!IsServerInitialized) return;
+            player.Index.Value = NextID.Value;
             Players.Add(player);
+            NextID.Value++;
         }
         
         public void RemoveFromLobby(GamePlayer player)
@@ -45,7 +51,6 @@ namespace Network
         
         private void OnPlayerListChanged(SyncListOperation op, int index, GamePlayer old_item, GamePlayer new_item, bool as_server)
         {
-            Debug.Log($"SyncList Changed: Operation: {op}, Index: {index}, OldItem: {old_item}, NewItem: {new_item}, AsServer: {as_server}");
             if (!IsClientInitialized) return;
             switch (op)
             {
