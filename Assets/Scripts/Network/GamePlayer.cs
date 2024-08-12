@@ -3,7 +3,6 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using Lobby;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Network
 {
@@ -43,6 +42,11 @@ namespace Network
             ready = next;
             var lobbyPlayer = GameLobby.Instance.GetPlayer(this);
             lobbyPlayer.SetReadyStatus(next ? ReadyStatus.Ready : ReadyStatus.NotReady);
+
+            if (IsHostInitialized)
+            {
+                LocalManager.Instance.CheckIfCanStart();
+            }
         }
 
         private void OnHostPlayerChanged(bool prev, bool next, bool as_server)

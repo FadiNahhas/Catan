@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Board.Pieces.Libraries;
-using FishNet.Managing;
 using Helpers;
 using Network;
 using Sirenix.OdinInspector;
@@ -76,6 +75,11 @@ namespace Lobby
         public LobbyPlayer GetPlayer(GamePlayer player)
         {
             return players.Find(p => p.Player == player);
+        }
+        
+        public void ToggleStartButtonInteractable(bool interactable)
+        {
+            startButton.interactable = interactable;
         }
     }
 }

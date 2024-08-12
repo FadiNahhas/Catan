@@ -1,46 +1,77 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using FishNet.CodeGenerating;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using Lobby;
+using UnityEngine;
 
 namespace Network
 {
     public class GameManager : NetworkBehaviour
     {
-        [AllowMutableSyncType] public readonly SyncList<GamePlayer> Players = new();
-        [AllowMutableSyncType] public readonly SyncVar<int> NextID = new();
+        private const int InvalidID = -1;
+        
+        [AllowMutableSyncType] public readonly SyncList<GamePlayer> Players = new(); 
+        public readonly SyncList<int> AvailableIDs = new();
+        public List<int> availableIdsEditor = new();
+
+        private int _maxPlayers = 4;
 
         public override void OnStartServer()
         {
             base.OnStartServer();
-            NextID.SetInitialValues(0);
+            InitializeIds();
+        }
+        
+        public override void OnStopServer()
+        {
+            base.OnStopServer();
         }
 
         public override void OnStartClient()
         {
             base.OnStartClient();
             Players.OnChange += OnPlayerListChanged;
+            
+            if (IsHostInitialized)
+            {
+                AvailableIDs.OnChange += OnAvailableIDsChanged;
+            }
         }
-        
+
+        private void OnAvailableIDsChanged(SyncListOperation op, int index, int olditem, int newitem, bool asserver)
+        {
+            if (!IsServerInitialized) return;
+            availableIdsEditor = AvailableIDs.Collection.ToList();
+        }
+
         public override void OnStopClient()
         {
             base.OnStopClient();
             Players.OnChange -= OnPlayerListChanged;
+            
+            if (IsHostInitialized)
+            {
+                AvailableIDs.OnChange -= OnAvailableIDsChanged;
+            }
         }
         
         public void AddToLobby(GamePlayer player)
         {
             if(!IsServerInitialized) return;
-            player.Index.Value = NextID.Value;
+            player.Index.Value = GetAvailableID();
             Players.Add(player);
-            NextID.Value++;
         }
         
         public void RemoveFromLobby(GamePlayer player)
         {
             if(!IsServerInitialized) return;
             Players.Remove(player);
+            
+            // Return the player's ID to the available IDs list
+            ReturnID(player.Index.Value);
         }
         
         public void SetReadyStatus(GamePlayer player, bool ready)
@@ -51,7 +82,7 @@ namespace Network
         
         private void OnPlayerListChanged(SyncListOperation op, int index, GamePlayer old_item, GamePlayer new_item, bool as_server)
         {
-            if (!IsClientInitialized) return;
+            if (as_server) return;
             switch (op)
             {
                 case SyncListOperation.Add:
@@ -83,6 +114,53 @@ namespace Network
         private void RemovePlayerFromLobby(GamePlayer player)
         {
             GameLobby.Instance.RemovePlayer(player);
+        }
+        
+        private void InitializeIds()
+        {
+            if(!IsServerInitialized) return;
+            for (int i = 0; i < _maxPlayers; i++)
+            {
+                AvailableIDs.Add(i);
+            }
+        }
+
+        private void SetMaxPlayers(int max_players)
+        {
+            _maxPlayers = max_players;
+        }
+        
+        private int GetAvailableID()
+        {
+            if(!IsServerInitialized) return InvalidID;
+
+            var id = InvalidID;
+            
+            if (AvailableIDs.Count > 0)
+            {
+                id = AvailableIDs.Min();
+            }
+            
+            if (id != InvalidID)
+            {
+                AvailableIDs.Remove(id);
+                Debug.Log($"Assigned ID: {id}, Remaining IDs: {string.Join(",", AvailableIDs)}");
+            }
+
+            return id;
+        }
+        
+        private void ReturnID(int id)
+        {
+            if(!IsServerInitialized) return;
+            AvailableIDs.Add(id);
+            Debug.Log($"Returned ID: {id}, Available IDs: {string.Join(",", AvailableIDs)}");
+        }
+
+        [ServerRpc]
+        public void StartGame()
+        {
+            
         }
     }
 }
