@@ -1553,12 +1553,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!4 &723720039 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7443408887813606049, guid: 0b650fca685f2eb41a86538aa883e4c1,
-    type: 3}
-  m_PrefabInstance: {fileID: 1678834919}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &744926643
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2432,7 +2426,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _overrideType: 3
   _updateHostVisibility: 1
-  _observerConditions: []
+  _observerConditions:
+  - {fileID: 11400000, guid: 2033f54fd2794464bae08fa5a55c8996, type: 2}
 --- !u!4 &1174148194 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7316503750261173591, guid: da1371528e41dc64382239bca77fe41e,
@@ -3704,7 +3699,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1734886160}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1312352244, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -3846,7 +3841,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 797931020}
-  - {fileID: 723720039}
   - {fileID: 1174148194}
   - {fileID: 1364458195}
   - {fileID: 1641805955}
@@ -5663,5 +5657,6 @@ SceneRoots:
   - {fileID: 1043475347}
   - {fileID: 1607594353}
   - {fileID: 1061636903}
+  - {fileID: 1678834919}
   - {fileID: 1734886160}
   - {fileID: 2104309032}

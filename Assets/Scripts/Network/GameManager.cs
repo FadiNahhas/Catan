@@ -34,28 +34,12 @@ namespace Network
         {
             base.OnStartClient();
             Players.OnChange += OnPlayerListChanged;
-            
-            if (IsHostInitialized)
-            {
-                AvailableIDs.OnChange += OnAvailableIDsChanged;
-            }
-        }
-
-        private void OnAvailableIDsChanged(SyncListOperation op, int index, int olditem, int newitem, bool asserver)
-        {
-            if (!IsServerInitialized) return;
-            availableIdsEditor = AvailableIDs.Collection.ToList();
         }
 
         public override void OnStopClient()
         {
             base.OnStopClient();
             Players.OnChange -= OnPlayerListChanged;
-            
-            if (IsHostInitialized)
-            {
-                AvailableIDs.OnChange -= OnAvailableIDsChanged;
-            }
         }
         
         public void AddToLobby(GamePlayer player)
@@ -69,9 +53,6 @@ namespace Network
         {
             if(!IsServerInitialized) return;
             Players.Remove(player);
-            
-            // Return the player's ID to the available IDs list
-            ReturnID(player.Index.Value);
         }
         
         public void SetReadyStatus(GamePlayer player, bool ready)
@@ -114,6 +95,8 @@ namespace Network
         private void RemovePlayerFromLobby(GamePlayer player)
         {
             GameLobby.Instance.RemovePlayer(player);
+            // Return the player's ID to the available IDs list
+            ReturnID(player.Index.Value);
         }
         
         private void InitializeIds()
