@@ -1,4 +1,5 @@
 ﻿using System;
+using Network;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -28,10 +29,8 @@ namespace UI.Browser
             cancelButton.onClick.RemoveListener(Cancel);
         }
 
-        private void CreateLobby()
-        {
-            
-        }
+        private void CreateLobby() => LobbyManager.Instance.CreateLobby(nameInputField.text,
+            (int)maxPlayersSlider.value, passwordInputField.text);
 
         private void Cancel()
         {

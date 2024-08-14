@@ -12,9 +12,20 @@ namespace UI.Browser
         [SerializeField] private TextMeshProUGUI gameName;
         [SerializeField] private TextMeshProUGUI playerCount;
         [SerializeField] private Image hasPassword;
+        [SerializeField] private Button selectButton;
 
         public CSteamID LobbyId { get; private set; }
-        
+
+        private void OnEnable()
+        {
+            
+        }
+
+        private void OnDisable()
+        {
+            
+        }
+
         public void Init(string game_name, int player_count, int max_players, bool has_password, CSteamID lobby_id, Action<GameBrowserItem> on_select)
         {
             gameName.text = game_name;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Network;
 using Sirenix.OdinInspector;
 using Steamworks;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace UI.Browser
 {
     public class GameBrowser : MonoBehaviour
     {
+
+        
         [TabGroup("Prefabs"), SerializeField] private GameBrowserItem gameBrowserItemPrefab;
         [TabGroup("References"), SerializeField] private Transform content;
         [TabGroup("References"), SerializeField] private Button createButton;
@@ -32,7 +35,7 @@ namespace UI.Browser
 
         private void OnDisable()
         {
-            _lobbyMatchListCallback?.Unregister();
+            _lobbyMatchListCallback?.Dispose();
             refreshButton.onClick.RemoveListener(FetchPublicLobbies);
             createButton.onClick.RemoveListener(CreateLobby);
         }
@@ -44,6 +47,7 @@ namespace UI.Browser
         public void FetchPublicLobbies()
         {
             SetAllButtonInteractable(false);
+            SteamMatchmaking.AddRequestLobbyListStringFilter(LobbyManager.TestLobbyKey, "true", ELobbyComparison.k_ELobbyComparisonEqual);
             SteamMatchmaking.RequestLobbyList();
         }
 
@@ -52,11 +56,11 @@ namespace UI.Browser
         #region Callback Handlers
 
         // This method is called when the lobby list is received from Steam
-        private void OnLobbyMatchList(LobbyMatchList_t param)
+        private void OnLobbyMatchList(LobbyMatchList_t callback)
         {
             ClearLobbies();
             
-            for (var i = 0; i < param.m_nLobbiesMatching; i++)
+            for (var i = 0; i < callback.m_nLobbiesMatching; i++)
             {
                 var lobby = SteamMatchmaking.GetLobbyByIndex(i);
                 _lobbies.Add(lobby);
@@ -73,14 +77,14 @@ namespace UI.Browser
         {
             foreach (var lobby in _lobbies)
             {
-                bool hasStarted = SteamMatchmaking.GetLobbyData(lobby, "hasStarted") == "1";
+                bool hasStarted = SteamMatchmaking.GetLobbyData(lobby, LobbyManager.StartStatusKey) == "true";
                 
                 if (hasStarted) continue;
                 
-                string lobbyName = SteamMatchmaking.GetLobbyData(lobby, "name");
+                string lobbyName = SteamMatchmaking.GetLobbyData(lobby, LobbyManager.NameKey);
                 int currentPlayers = SteamMatchmaking.GetNumLobbyMembers(lobby);
                 int maxPlayers = SteamMatchmaking.GetLobbyMemberLimit(lobby);
-                bool hasPassword = SteamMatchmaking.GetLobbyData(lobby, "hasPassword") == "1";
+                bool hasPassword = SteamMatchmaking.GetLobbyData(lobby, LobbyManager.LockedKey) == "true";
                 
                 AddLobby(lobbyName, currentPlayers, maxPlayers, hasPassword, lobby);
             }
