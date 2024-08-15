@@ -1,8 +1,10 @@
+using Dependency_Injection;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using UI.Browser;
 using UnityEngine;
 
-namespace UI
+namespace UI.Main_Menu
 {
     public class MainMenu : MonoBehaviour
     {
@@ -14,6 +16,8 @@ namespace UI
         
         [TabGroup("Settings"), SerializeField] private float animationDuration = 0.5f;
         [TabGroup("Settings"), SerializeField] private Ease animationEase;
+        
+        [Inject] private GameBrowser _gameBrowserController;
         
         #region Initial Positions
 
@@ -43,7 +47,7 @@ namespace UI
         public void OpenGameBrowser()
         {
             mainMenu.DOAnchorPosX(_settingsMenuInitialXPos, animationDuration).SetEase(animationEase);
-            gameBrowser.DOAnchorPosX(TargetXPos, animationDuration).SetEase(animationEase);   
+            gameBrowser.DOAnchorPosX(TargetXPos, animationDuration).SetEase(animationEase).OnComplete(RefreshGameBrowser);   
         }
         
         public void CloseGameBrowser()
@@ -51,7 +55,9 @@ namespace UI
             mainMenu.DOAnchorPosX(TargetXPos, animationDuration).SetEase(animationEase);
             gameBrowser.DOAnchorPosX(_gameBrowserInitialXPos, animationDuration).SetEase(animationEase);
         }
-        
+
+        private void RefreshGameBrowser() => _gameBrowserController.FetchPublicLobbies();
+
         public void QuitGame() => Application.Quit();
     }
 }

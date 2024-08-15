@@ -638,9 +638,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ffd6973de404db6b08e92cff2581cf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bg: {fileID: 2084055734369032185}
   gameName: {fileID: 3427422999136032133}
   playerCount: {fileID: 893084219697696667}
   hasPassword: {fileID: 7372106970378929867}
+  selectButton: {fileID: -4634633372592608031}
+  selectedSprite: {fileID: 21300000, guid: 551085aaeb4a544a581ffba25cc47ee6, type: 3}
+  unselectedSprite: {fileID: 21300000, guid: 43e31fe6c0cbc48d3b2d7a0a2b478cf3, type: 3}
 --- !u!1 &9043505816245054876
 GameObject:
   m_ObjectHideFlags: 0

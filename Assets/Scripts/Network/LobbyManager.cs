@@ -26,6 +26,12 @@ namespace Network
 
         #region Unity Events
 
+        protected override void Awake()
+        {
+            base.Awake();
+            DontDestroyOnLoad(gameObject);
+        }
+
         private void OnEnable()
         {
             _lobbyCreatedCallback = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
@@ -50,6 +56,12 @@ namespace Network
             };
             
             SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, max_players);
+        }
+        
+        public void JoinLobby(CSteamID lobby_id)
+        {
+            SteamMatchmaking.JoinLobby(lobby_id);
+            Debug.Log($"Attempting to join lobby: {lobby_id}");
         }
 
         private void SetLobbyData(CSteamID lobby_id)

@@ -15,6 +15,7 @@ MonoBehaviour:
   sceneDatas_byGuid:
     keys:
     - 99c9720ab356a0642a771bea13969a05
+    - a3b699422e2dfc949b9160223a860af5
     values:
     - goDatas_byGlobalId:
         keys:
@@ -43,3 +44,9 @@ MonoBehaviour:
           iconNameOrGuid: BoxCollider Icon
         - colorIndex: 2
           iconNameOrGuid: MeshCollider Icon
+    - goDatas_byGlobalId:
+        keys:
+        - globalObjectIdString: GlobalObjectId_V1-2-a3b699422e2dfc949b9160223a860af5-1765424555-0
+        values:
+        - colorIndex: 3
+          iconNameOrGuid: 

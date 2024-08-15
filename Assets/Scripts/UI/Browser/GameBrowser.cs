@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Dependency_Injection;
 using Network;
 using Sirenix.OdinInspector;
 using Steamworks;
+using UI.ModalSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.Browser
 {
-    public class GameBrowser : MonoBehaviour
+    public class GameBrowser : MonoBehaviour, IDependencyProvider
     {
-
-        
         [TabGroup("Prefabs"), SerializeField] private GameBrowserItem gameBrowserItemPrefab;
         [TabGroup("References"), SerializeField] private Transform content;
         [TabGroup("References"), SerializeField] private Button createButton;
         [TabGroup("References"), SerializeField] private Button joinButton;
         [TabGroup("References"), SerializeField] private Button refreshButton;
+        [TabGroup("References"), SerializeField] private GameObject loadingWheel;
         [TabGroup("References"), SerializeField] private LobbyCreator lobbyCreator;
 
         private Callback<LobbyMatchList_t> _lobbyMatchListCallback;
@@ -31,6 +33,7 @@ namespace UI.Browser
             _lobbyMatchListCallback = Callback<LobbyMatchList_t>.Create(OnLobbyMatchList);
             refreshButton.onClick.AddListener(FetchPublicLobbies);
             createButton.onClick.AddListener(CreateLobby);
+            joinButton.onClick.AddListener(JoinLobby);
         }
 
         private void OnDisable()
@@ -38,7 +41,15 @@ namespace UI.Browser
             _lobbyMatchListCallback?.Dispose();
             refreshButton.onClick.RemoveListener(FetchPublicLobbies);
             createButton.onClick.RemoveListener(CreateLobby);
+            joinButton.onClick.RemoveListener(JoinLobby);
         }
+
+        #endregion
+
+        #region DependencyInjection
+
+        [Provide]
+        private GameBrowser ProvideGameBrowser() => this;
 
         #endregion
 
@@ -47,8 +58,27 @@ namespace UI.Browser
         public void FetchPublicLobbies()
         {
             SetAllButtonInteractable(false);
+            loadingWheel.SetActive(true);
             SteamMatchmaking.AddRequestLobbyListStringFilter(LobbyManager.TestLobbyKey, "true", ELobbyComparison.k_ELobbyComparisonEqual);
             SteamMatchmaking.RequestLobbyList();
+        }
+
+        private void JoinLobby()
+        {
+            if (_selectedLobby == null)
+            {
+                ModalManager.Show("Error", "Please select a lobby to join.");
+                return;
+            } 
+            
+            var hasPassword = SteamMatchmaking.GetLobbyData(_selectedLobby.LobbyId, LobbyManager.LockedKey) == "true";
+            if (hasPassword)
+            {
+                StartCoroutine(JoinLockedLobby());
+                return;
+            }
+            
+            LobbyManager.Instance.JoinLobby(_selectedLobby.LobbyId);
         }
 
         #endregion
@@ -75,6 +105,7 @@ namespace UI.Browser
 
         private void DisplayLobbies()
         {
+            loadingWheel.SetActive(false);
             foreach (var lobby in _lobbies)
             {
                 bool hasStarted = SteamMatchmaking.GetLobbyData(lobby, LobbyManager.StartStatusKey) == "true";
@@ -90,35 +121,16 @@ namespace UI.Browser
             }
             
             SetAllButtonInteractable(true);
+            SetButtonInteractable(joinButton, false);
         }
+        
         private void AddLobby(string game_name, int player_count, int max_players, bool has_password, CSteamID lobby_id)
         {
             var gameBrowserItem = Instantiate(gameBrowserItemPrefab, content);
             gameBrowserItem.Init(game_name, player_count, max_players, has_password, lobby_id, SelectLobby);
             _gameBrowserItems.Add(gameBrowserItem);
         }
-
-        private void SelectLobby(GameBrowserItem lobby)
-        {
-            _selectedLobby?.Deselect();
-            _selectedLobby = lobby;
-            _selectedLobby.Select();
-            
-            SetButtonInteractable(joinButton, true);
-        }
-
-        private void CreateLobby()
-        {
-            lobbyCreator.gameObject.SetActive(true);
-            SetAllButtonInteractable(false);
-        }
-
-        public void CancelLobbyCreation()
-        {
-            lobbyCreator.gameObject.SetActive(false);
-            SetAllButtonInteractable(true);
-        }
-
+        
         private void ClearLobbies()
         {
             _selectedLobby = null;
@@ -144,6 +156,84 @@ namespace UI.Browser
             button.interactable = enable;
         }
         
+        #endregion
+        
+        #region Button Handlers
+        
+        private void SelectLobby(GameBrowserItem lobby)
+        {
+            if (lobby == _selectedLobby)
+            {
+                _selectedLobby.Deselect();
+                _selectedLobby = null;
+                SetButtonInteractable(joinButton, false);
+                return;
+            }
+            
+            _selectedLobby?.Deselect();
+            _selectedLobby = lobby;
+            _selectedLobby.Select();
+            
+            SetButtonInteractable(joinButton, true);
+        }
+        
+        private void CreateLobby()
+        {
+            lobbyCreator.gameObject.SetActive(true);
+            SetAllButtonInteractable(false);
+        }
+
+        public void CancelLobbyCreation()
+        {
+            lobbyCreator.gameObject.SetActive(false);
+            SetAllButtonInteractable(true);
+        }
+        
+        #endregion
+
+        #region Coroutines
+
+        private IEnumerator JoinLockedLobby()
+        {
+            var isPasswordCorrect = false;
+            PasswordModalSystem.GetPassword();
+            
+            while (!isPasswordCorrect)
+            {
+                while (PasswordModalSystem.Response == PasswordModalResponse.None) yield return null;
+
+                switch (PasswordModalSystem.Response)
+                {
+                    case PasswordModalResponse.Cancel:
+                        PasswordModalSystem.Close();
+                        yield break;
+                    case PasswordModalResponse.Join:
+                    {
+                        var lobbyPassword = SteamMatchmaking.GetLobbyData(_selectedLobby.LobbyId, LobbyManager.PasswordKey);
+                        var password = PasswordModalSystem.Password;
+
+                        if (lobbyPassword != password)
+                        {
+                            ModalManager.Show("Error", "Incorrect password.");
+                            PasswordModalSystem.ResetResponse();
+                        }
+                        else
+                        {
+                            isPasswordCorrect = true;
+                            PasswordModalSystem.Close();
+                            LobbyManager.Instance.JoinLobby(_selectedLobby.LobbyId);
+                        }
+
+                        break;
+                    }
+                }
+
+                yield return null;
+            }
+
+            yield return null;
+        }
+
         #endregion
         
     }

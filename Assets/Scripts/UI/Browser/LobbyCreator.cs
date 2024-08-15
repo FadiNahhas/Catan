@@ -2,6 +2,7 @@
 using Network;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.ModalSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,8 +30,17 @@ namespace UI.Browser
             cancelButton.onClick.RemoveListener(Cancel);
         }
 
-        private void CreateLobby() => LobbyManager.Instance.CreateLobby(nameInputField.text,
-            (int)maxPlayersSlider.value, passwordInputField.text);
+        private void CreateLobby()
+        {
+            if (nameInputField.text.Length == 0)
+            {
+                ModalManager.Show("Error", "Please enter a name for the lobby.");
+                return;
+            }
+            
+            LobbyManager.Instance.CreateLobby(nameInputField.text,
+                (int)maxPlayersSlider.value, passwordInputField.text);
+        }
 
         private void Cancel()
         {
