@@ -27,7 +27,7 @@ namespace Lobby
             lobbyName.text = lobby_name;
         }
         
-        public void AddPlayer(GamePlayer player)
+        public void AddPlayer(Player player)
         {
             var p = Instantiate(lobbyPlayerPrefab, playerContainer);
             // Initialize player variables (host, name, color, etc.)
@@ -36,7 +36,7 @@ namespace Lobby
         }
 
         // TODO: Add player class and implement function
-        public void RemovePlayer(GamePlayer player_to_remove)
+        public void RemovePlayer(Player player_to_remove)
         {
             var player = players.Find(p => p.Player == player_to_remove);
             
@@ -58,9 +58,9 @@ namespace Lobby
             players.Clear();
         }
 
-        public void UpdateLobbyButtons(GamePlayer local_player)
+        public void UpdateLobbyButtons(Player local_player)
         {
-            if (local_player.IsHostPlayer.Value)
+            if (local_player.IsHostPlayer())
             {
                 startButton.gameObject.SetActive(true);
                 readyButton.gameObject.SetActive(false);
@@ -72,7 +72,7 @@ namespace Lobby
             }
         }
         
-        public LobbyPlayer GetPlayer(GamePlayer player)
+        public LobbyPlayer GetPlayer(Player player)
         {
             return players.Find(p => p.Player == player);
         }

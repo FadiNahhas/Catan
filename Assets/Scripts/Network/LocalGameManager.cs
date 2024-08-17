@@ -1,8 +1,8 @@
-﻿using FishNet.Managing.Scened;
+﻿using FishNet.Managing;
 using Helpers;
 using Steamworks;
 using UnityEngine;
-using SceneManager = UnityEngine.SceneManagement.SceneManager;
+using UnityEngine.SceneManagement;
 
 namespace Network
 {
@@ -11,6 +11,7 @@ namespace Network
         private Callback<LobbyEnter_t> _lobbyEnterCallback;
         
         private CSteamID _currentLobbyId;
+        public CSteamID CurrentLobbyId => _currentLobbyId;
 
         #region Unity Events
 
@@ -39,8 +40,9 @@ namespace Network
             if (callback.m_EChatRoomEnterResponse == (int)EChatRoomEnterResponse.k_EChatRoomEnterResponseSuccess)
             {
                 Debug.Log($"Successfully joined lobby: {callback.m_ulSteamIDLobby}");
-                
                 _currentLobbyId = new CSteamID(callback.m_ulSteamIDLobby);
+                NetworkManager.Instances[0].ServerManager.StartConnection();
+                NetworkManager.Instances[0].ClientManager.StartConnection();
                 SceneManager.LoadScene(sceneBuildIndex: 1);
             }
             else

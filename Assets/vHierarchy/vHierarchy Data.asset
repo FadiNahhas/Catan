@@ -46,7 +46,16 @@ MonoBehaviour:
           iconNameOrGuid: MeshCollider Icon
     - goDatas_byGlobalId:
         keys:
-        - globalObjectIdString: GlobalObjectId_V1-2-a3b699422e2dfc949b9160223a860af5-1765424555-0
+        - globalObjectIdString: GlobalObjectId_V1-2-a3b699422e2dfc949b9160223a860af5-193384372-0
+        - globalObjectIdString: GlobalObjectId_V1-2-a3b699422e2dfc949b9160223a860af5-338747721-0
+        - globalObjectIdString: GlobalObjectId_V1-2-a3b699422e2dfc949b9160223a860af5-584535797-0
+        - globalObjectIdString: GlobalObjectId_V1-2-a3b699422e2dfc949b9160223a860af5-1445364501-0
         values:
-        - colorIndex: 3
+        - colorIndex: 6
+          iconNameOrGuid: 
+        - colorIndex: 2
+          iconNameOrGuid: 
+        - colorIndex: 4
+          iconNameOrGuid: 
+        - colorIndex: 7
           iconNameOrGuid: 

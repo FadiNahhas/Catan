@@ -17,7 +17,7 @@ namespace Lobby
         [SerializeField] private TextMeshProUGUI playerName;
 
         [SerializeField] private ReadyStatus status;
-        public GamePlayer Player { get; private set; }
+        public Player Player { get; private set; }
 
         private void Awake()
         {
@@ -25,12 +25,12 @@ namespace Lobby
             _readyStatusColors = Resources.Load<ReadyStatusColors>("Ready Status Colors");
         }
 
-        public void Init(GamePlayer player, Color player_color)
+        public void Init(Player player, Color player_color)
         {
             Player = player;
-            SetPlayerName(player.playerName);
+            SetPlayerName(player.Name);
 
-            if (player.IsHostPlayer.Value)
+            if (player.IsHostPlayer())
             {
                 SetReadyStatus(ReadyStatus.Host);
             }

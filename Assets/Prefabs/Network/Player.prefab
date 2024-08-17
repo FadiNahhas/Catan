@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5686659586461610755
+--- !u!1 &1961579224893405283
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,24 +8,24 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6393950756805401296}
-  - component: {fileID: 2617342687308648940}
-  - component: {fileID: -4379337236866272199}
-  - component: {fileID: 2051447671183069932}
+  - component: {fileID: 5823988494832751229}
+  - component: {fileID: 1216482039019671405}
+  - component: {fileID: -8707298756387221112}
+  - component: {fileID: -7098302198912724842}
   m_Layer: 0
-  m_Name: GamePlayer
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6393950756805401296
+--- !u!4 &5823988494832751229
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5686659586461610755}
+  m_GameObject: {fileID: 1961579224893405283}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -34,32 +34,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2617342687308648940
+--- !u!114 &1216482039019671405
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5686659586461610755}
+  m_GameObject: {fileID: 1961579224893405283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72388dcf76e64306993de297f02b7c98, type: 3}
+  m_Script: {fileID: 11500000, guid: c18a2e56c9f54b508c6d8c9c03471363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
-  _addedNetworkObject: {fileID: -4379337236866272199}
-  _networkObjectCache: {fileID: -4379337236866272199}
-  index: 0
-  playerName: TurboInter
-  isHost: 0
-  isReady: 0
---- !u!114 &-4379337236866272199
+  _addedNetworkObject: {fileID: -8707298756387221112}
+  _networkObjectCache: {fileID: -8707298756387221112}
+--- !u!114 &-8707298756387221112
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5686659586461610755}
+  m_GameObject: {fileID: 1961579224893405283}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
@@ -69,7 +65,7 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
-  - {fileID: 2617342687308648940}
+  - {fileID: 1216482039019671405}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
   <NestedRootNetworkBehaviours>k__BackingField: []
   SerializedTransformProperties:
@@ -78,7 +74,7 @@ MonoBehaviour:
     LocalScale: {x: 0, y: 0, z: 0}
   _isNetworked: 1
   _isSpawnable: 1
-  _isGlobal: 0
+  _isGlobal: 1
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
@@ -95,17 +91,17 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 1
+  <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 4376664945076426254
---- !u!114 &2051447671183069932
+  <AssetPathHash>k__BackingField: 0
+--- !u!114 &-7098302198912724842
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5686659586461610755}
+  m_GameObject: {fileID: 1961579224893405283}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
@@ -113,4 +109,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _overrideType: 3
   _updateHostVisibility: 1
-  _observerConditions: []
+  _observerConditions:
+  - {fileID: 11400000, guid: 2033f54fd2794464bae08fa5a55c8996, type: 2}
