@@ -1362,7 +1362,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1364458194}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Network.LocalManager, Assembly-CSharp
         m_MethodName: OnLeaveButtonClicked
         m_Mode: 1
@@ -2512,7 +2512,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1364458195}
-  - component: {fileID: 1364458194}
   m_Layer: 0
   m_Name: LocalManager
   m_TagString: Untagged
@@ -2520,20 +2519,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1364458194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1364458193}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfa10f89d6754fe6a7bced1ef596a6c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lobby: {fileID: 2023476049}
-  gameManager: {fileID: 0}
 --- !u!4 &1364458195
 Transform:
   m_ObjectHideFlags: 0
@@ -2633,7 +2618,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1364458194}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Network.LocalManager, Assembly-CSharp
         m_MethodName: OnReadyButtonClicked
         m_Mode: 1

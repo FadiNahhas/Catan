@@ -1,4 +1,5 @@
-﻿using FishNet.Managing;
+﻿using System.Collections;
+using FishNet.Managing;
 using Helpers;
 using Steamworks;
 using UnityEngine;
@@ -41,9 +42,9 @@ namespace Network
             {
                 Debug.Log($"Successfully joined lobby: {callback.m_ulSteamIDLobby}");
                 _currentLobbyId = new CSteamID(callback.m_ulSteamIDLobby);
-                NetworkManager.Instances[0].ServerManager.StartConnection();
-                NetworkManager.Instances[0].ClientManager.StartConnection();
-                SceneManager.LoadScene(sceneBuildIndex: 1);
+                var host = SteamMatchmaking.GetLobbyOwner(_currentLobbyId);
+                NetworkManager.Instances[0].ClientManager.StartConnection(host.ToString());
+                StartCoroutine(LoadGameScene());
             }
             else
             {
@@ -52,5 +53,16 @@ namespace Network
         }
 
         #endregion
+
+        private IEnumerator LoadGameScene()
+        {
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneBuildIndex: 1);
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+
+            Debug.Log("Game scene loaded.");
+        }
     }
 }

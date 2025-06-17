@@ -1,4 +1,5 @@
-﻿using HeathenEngineering.SteamworksIntegration;
+﻿using FishNet.Managing;
+using HeathenEngineering.SteamworksIntegration;
 using Helpers;
 using Steamworks;
 using UnityEngine;
@@ -55,7 +56,7 @@ namespace Network
                 Password = lobby_password,
                 MaxPlayers = max_players
             };
-            
+            NetworkManager.Instances[0].ServerManager.StartConnection();
             SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, max_players);
         }
         

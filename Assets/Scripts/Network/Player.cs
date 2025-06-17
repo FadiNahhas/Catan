@@ -9,17 +9,32 @@ namespace Network
 {
     public class Player : NetworkBehaviour
     {
-        public UserData PlayerData { get; private set; }
+        [AllowMutableSyncType] public readonly SyncVar<UserData> PlayerData = new();
         public string Name { get; private set; }
         public Texture2D Avatar { get; private set; }
         
         [AllowMutableSyncType] public readonly SyncVar<bool> IsReady = new();
         [AllowMutableSyncType] public readonly SyncVar<int> Index = new();
-        public void AssignSteamId(CSteamID steam_id)
+
+        #region Network Events
+
+        public override void OnStartClient()
         {
-            PlayerData = steam_id;
-            Name = PlayerData.Nickname;
-            Avatar = PlayerData.Avatar;
+            base.OnStartClient();
+            if (IsOwner)
+            {
+                SetSteamId(UserData.Me);
+            }
+        }
+
+        #endregion
+        
+        [ServerRpc(RequireOwnership = true)]
+        private void SetSteamId(CSteamID steam_id)
+        {
+            PlayerData.Value = steam_id;
+            Name = PlayerData.Value.Nickname;
+            Avatar = PlayerData.Value.Avatar;
         }
 
         public bool IsHostPlayer()
@@ -27,7 +42,7 @@ namespace Network
             var lobby = LocalGameManager.Instance.CurrentLobbyId;
             var host = SteamMatchmaking.GetLobbyOwner(lobby);
             
-            return host == PlayerData;
+            return host == PlayerData.Value.id;
         }
     }
 }
